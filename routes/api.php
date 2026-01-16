@@ -49,6 +49,7 @@ Route::post('/deletecustomerorder/{id}',[OrderController::class,'destroy'])->mid
 Route::post('/additemtoorder/{id}',[OrderController::class,'addItem'])->middleware(['auth:sanctum', 'employee']);
 Route::post('/removeitemfromorder/{id}',[OrderController::class,'removeItem'])->middleware(['auth:sanctum', 'employee']);
 Route::post('/updateorderheaders/{id}',[OrderController::class,'update'])->middleware(['auth:sanctum', 'employee']);
+Route::post('/updaterate/{id}',[AuthController::class,'updateRate'])->middleware(['auth:sanctum','employee']);
 //SUPPLIER ORDERS ROUTES
 Route::get('/supplierorders',[App\Http\Controllers\Api\SupplierOrderController::class,'index'])->middleware(['auth:sanctum','employee']);
 Route::get('/supplierorders/{id}',[App\Http\Controllers\Api\SupplierOrderController::class,'show'])->middleware(['auth:sanctum','employee']);
