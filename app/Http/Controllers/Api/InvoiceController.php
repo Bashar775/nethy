@@ -26,8 +26,9 @@ class InvoiceController extends Controller
     public function generate(Request $request){
         $this->authorize('customerInvoice',User::class);
         $atts=$request->validate([
+            'invoice_number'=>'nullable|string|unique:invoices,invoice_number',
             'order_id'=>'required|exists:orders,id',
-            'due_date'=>'nullable|date',
+            'due_date'=>'nullable|date|after:today',
             'notes'=>'nullable|string',
         ]);
         $order=Order::findOrFail($atts['order_id']);
@@ -44,13 +45,16 @@ class InvoiceController extends Controller
             'tax_amount'=>$order->tax_amount,
             'discount_amount'=>$order->discount_amount,
             'total_amount'=>$order->total_amount,
-            'currnecy'=>$order->currency ?? 'SEK',
+            'currency'=>$order->currency ?? 'SEK',
             'due_date'=>$atts['due_date']??null,
             'payment_status'=>'unpaid',
             'notes'=>$atts['notes']??'Invoice generated for order #'.$order->id
         ]);
+        if(!isset($atts['invoice_number'])){
         $invoice->invoice_number='INV-'.date('Y').date('M').'-'.$invoice->id;
-        $invoice->save();
+        $invoice->save();}else{
+            $invoice->invoice_number=$atts['invoice_number'];
+            $invoice->save();}
         }catch(\Exception $e){
             return response()->json(['message'=>'Error generating invoice: '.$e->getMessage()],500);
         }
