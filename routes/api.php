@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnalysisController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrderController;
 use App\Models\User;
@@ -91,3 +92,8 @@ Route::delete('/deleteimage/{id}',[App\Http\Controllers\Api\ImageController::cla
 
 //just for testing
 Route::post('/seed',[AuthController::class, 'seed']);
+//ANALYSIS ROUTES
+Route::post('/analysis/all',[App\Http\Controllers\Api\AnalysisController::class,'all'])->middleware(['auth:sanctum','employee']);
+Route::get('/productspercategory',[AnalysisController::class, 'numberOfProductsPerCategory'])->middleware(['auth:sanctum','employee']);
+Route::post('/monthlyrevanue',[AnalysisController::class,'monthlyRevanue'])->middleware(['auth:sanctum','employee']);
+Route::post('/monthlyprofit',[AnalysisController::class,'monthlyProfit'])->middleware(['auth:sanctum','employee']);
