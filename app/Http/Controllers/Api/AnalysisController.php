@@ -59,7 +59,7 @@ class AnalysisController extends Controller
                 $payingCustomers +=1;
             }
         }
-        return response()->json(['Total Revanue'=>$totalRevanue,'Total Profit'=>$totalProfit,'Total Customer Orders'=>$totalCustomerOrders,'New Users'=>$newUsers,'Products Sold'=>$productsSold,'number of customers'=>$customer->count(),'number of paying customers'=>$payingCustomers],200);
+        return response()->json(['Total Revanue'=>$totalRevanue,'Total Profit'=>$totalProfit,'Total Customer Orders'=>$totalCustomerOrders,'New Users'=>$newUsers,'Products Sold'=>$productsSold,'number of customers'=>$customers->count(),'number of paying customers'=>$payingCustomers],200);
 
     }
     public function monthlyRevanue(Request $request){
