@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ImageResource;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
@@ -26,6 +27,11 @@ class OrderController extends Controller
         $this->authorize('viewAnyOrder', User::class);
         $order = Order::findOrFail($id);
         $relatedProducts = $order->products;
+        foreach ($relatedProducts as $productData){
+            $product=Product::find($product->id);
+            $images=ImageResource::collection($product->images);
+            $productData['images']=$images;
+        }
         return response()->json(['order'=>OrderResource::make($order),'products' => $relatedProducts], 200);
     }
     public function store(Request $request)
