@@ -26,7 +26,7 @@ class OrderController extends Controller
         $this->authorize('viewAnyOrder', User::class);
         $order = Order::findOrFail($id);
         $relatedProducts = $order->products;
-        return response()->json(['data' => $relatedProducts], 200);
+        return response()->json(['order'=>OrderResource::make($order),'products' => $relatedProducts], 200);
     }
     public function store(Request $request)
     {
