@@ -28,7 +28,7 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         $relatedProducts = $order->products;
         foreach ($relatedProducts as $productData){
-            $product=Product::find($product->id);
+            $product=Product::find($productData->id);
             $images=ImageResource::collection($product->images);
             $productData['images']=$images;
         }
