@@ -18,7 +18,7 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'user_name'=>User::find($this->user_id)??'user not found',
+            'user_name'=>User::find($this->user_id)->name??'user not found',
             'order_number' => $this->order_number,
             'number_of_items' => $this->number_of_items,
             'subtotal' => $this->subtotal,
