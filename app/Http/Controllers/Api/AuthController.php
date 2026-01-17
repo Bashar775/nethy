@@ -27,6 +27,14 @@ class AuthController extends Controller
         $employees = User::where('is_employee', 1)->get();
         return UserResource::collection($employees);
     }
+    public function show(Request $request,$id){
+        $this->authorize('browseUsers', User::class);
+        $user=User::find($id);
+        if(!$user){
+            return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
+        }
+        return response()->json(['user'=>UserResource::make($user)],200);
+    }
     public function register(Request $request)
     {
         $atts = $request->validate([
