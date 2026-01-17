@@ -81,4 +81,9 @@ class UserPolicy
         Log::error('hi from policy - payment');
         return $user->isAdmin() || $user->isInventory();
     }
+    public function analysis(User $user): bool
+    {
+        Log::error('hi from policy - analysis');
+        return $user->isAdmin() || $user->isInventory();
+    }
 }
