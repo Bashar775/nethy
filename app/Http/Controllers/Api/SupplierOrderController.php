@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SupplierOrderResource;
 use App\Models\Product;
 use App\Models\StockMovment;
+use App\Models\SupplierInvoice;
 use App\Models\SupplierOrder;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -313,54 +314,78 @@ class SupplierOrderController extends Controller
             return response()->json(['message' => 'Order not found'], 404);
         }
     }
-    public function partialConfirmation(Request $request,$id){
-        $this->authorize('supplierOrder', User::class);
-        $atts = $request->validate([
-            'products' => 'required|array|min:1',
-            'products.*.id' => 'required|exists:products,id|distinct',
-            'products.*.quantity' => 'required|integer|min:1',
-        ]);
-        $order = SupplierOrder::find($id);
-        if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-        if ($order->status == 'confirmed') {
-            return response()->json(['message' => 'you cannot confirm the same order twice'], 400);
-        }
-        if($order->status == 'partialy_confirmed'){
-            
-        }
-        try {
-            DB::transaction(function () use ($order, $atts) {
-                foreach ($atts['products'] as $productData) {
-                    $product = Product::findOrFail($productData['id']);
-                    $quantityToConfirm = $productData['quantity'];
-                    $projectedQty = $product->stock_quantity + $quantityToConfirm;
-                    if ($projectedQty < 0) {
-                        $product->status = 'alertstock';
-                    } elseif ($projectedQty <= 0) {
-                        $product->status = 'outofstock';
-                    } elseif ($projectedQty < $product->stock_alert) {
-                        $product->status = 'lowstock';
-                    } else {
-                        $product->status = 'instock';
-                    }
-                    $product->stock_quantity = $projectedQty;
-                    $product->save();
-                    StockMovment::create([
-                        'product_id' => $product->id,
-                        'related_type' => 'supplier_order',
-                        'related_id' => $order->id,
-                        'type' => 'in',
-                        'quantity_ordered' => $quantityToConfirm,
-                        'quantity_in_stock' => $projectedQty,
-                        'return' => false,
-                    ]);
-                }
-            });
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Partial confirmation failed', 'error' => $e->getMessage()], 500);
-        }
-        return response()->json(['message' => 'Partial confirmation successful'], 200);
-    }
+//     public function partialConfirmation(Request $request,$id){
+//         $this->authorize('supplierOrder', User::class);
+//         $atts = $request->validate([
+//             'products' => 'required|array|min:1',
+//             'products.*.id' => 'required|exists:products,id|distinct',
+//             'products.*.quantity' => 'required|integer|min:1',
+//         ]);
+//         $order = SupplierOrder::find($id);
+//         if (!$order) {
+//             return response()->json(['message' => 'Order not found'], 404);
+//         }
+//         if ($order->status == 'confirmed') {
+//             return response()->json(['message' => 'you cannot confirm the same order twice'], 400);
+//         }
+//         $products=$order->products()->get();
+//         foreach ($atts['products'] as $productData){
+//             $found=false;
+//             foreach($products as $prod){
+//                 if($prod->id == $productData['id']){
+//                     $found=true;
+//                     if($productData['quantity'] > ($prod->pivot->quantity - $prod->pivot->quantity_confirmed)){
+//                         return response()->json(['message' => 'Quantity to confirm exceeds the remaining quantity for product ID: '.$prod->id], 400);
+//                     }
+//                 }
+//             }
+//             if(!$found){
+//                 return response()->json(['message' => 'Product ID: '.$productData['id'].' not found in the order'], 404);
+//             }
+//         }
+//         if($order->status == 'partialy_confirmed'){
+
+//         }
+//         try {
+//             DB::transaction(function () use ($order, $atts) {
+//                 foreach ($atts['products'] as $productData) {
+//                     $product = Product::findOrFail($productData['id']);
+//                     $quantityToConfirm = $productData['quantity'];
+//                     $projectedQty = $product->stock_quantity + $quantityToConfirm;
+//                     if ($projectedQty < 0) {
+//                         $product->status = 'alertstock';
+//                     } elseif ($projectedQty <= 0) {
+//                         $product->status = 'outofstock';
+//                     } elseif ($projectedQty < $product->stock_alert) {
+//                         $product->status = 'lowstock';
+//                     } else {
+//                         $product->status = 'instock';
+//                     }
+//                     $product->stock_quantity = $projectedQty;
+//                     $product->save();
+//                     $order->products()->updateExistingPivot($product->id, [
+//                         'quantity_confirmed' => DB::raw('quantity_confirmed + ' . $quantityToConfirm),
+//                     ]);
+//                     $order->save();
+//                     StockMovment::create([
+//                         'product_id' => $product->id,
+//                         'related_type' => 'supplier_order',
+//                         'related_id' => $order->id,
+//                         'type' => 'in',
+//                         'quantity_ordered' => $quantityToConfirm,
+//                         'quantity_in_stock' => $projectedQty,
+//                         'return' => false,
+//                     ]);
+//                 }
+//                 SupplierInvoice::create([
+//                     'supplier_id'=> $order->supplier_id,
+//                     'supplier_order_id'=> $order->id,
+//                     ''
+//                 ]);
+//             });
+//         } catch (\Exception $e) {
+//             return response()->json(['message' => 'Partial confirmation failed', 'error' => $e->getMessage()], 500);
+//         }
+//         return response()->json(['message' => 'Partial confirmation successful'], 200);
+//     }
 }

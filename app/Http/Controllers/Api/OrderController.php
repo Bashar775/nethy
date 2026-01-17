@@ -31,6 +31,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         // $this->authorize('createOrder', User::class);
+        //check for clients only creation of customer order
         $atts = $request->validate([
             'currency' => 'nullable|string|max:5',
             'payment_method' => 'nullable|string|max:255',
@@ -58,6 +59,7 @@ class OrderController extends Controller
                 $orderNumber = 'ORD-' .date('Y').date('M').'-'. $order->id;
                 $order->order_number=$orderNumber;
                 if (!$request->has('products') || count($atts['products']) === 0) {
+                    $order->save();
                     return $order;
                 }
                 $number_of_items=0;
