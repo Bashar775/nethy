@@ -14,7 +14,7 @@ class AnalysisController extends Controller
     use AuthorizesRequests;
     public function all(Request $request){
         $this->authorize('analysis',User::class);
-        $atts=$request([
+        $atts=$request->validate([
             'from'=>'required_with:to|date',
             'to'=> 'required_with:from|date|after_or_equal:from',
         ]);
@@ -64,7 +64,7 @@ class AnalysisController extends Controller
     }
     public function monthlyRevanue(Request $request){
         $this->authorize('analysis',User::class);
-        $atts=$request([
+        $atts=$request->validate([
             'year'=>'nullable|integer|min:2000|max:'.now()->year,
         ]);
         if(!isset($atts['year'])){
@@ -89,7 +89,7 @@ class AnalysisController extends Controller
     }
     public function monthlyProfit(Request $request){
         $this->authorize('analysis',User::class);
-        $atts=$request([
+        $atts=$request->validate([
             'year'=>'nullable|integer|min:2000|max:'.now()->year,
         ]);
         if(!isset($atts['year'])){
