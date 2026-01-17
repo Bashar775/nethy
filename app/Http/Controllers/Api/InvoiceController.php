@@ -105,12 +105,15 @@ class InvoiceController extends Controller
             'currency'=>'nullable|string|size:3',
             'invoice_date'=>'nullable|date',
             'invoice_number'=>'nullable|string|unique:invoices,invoice_number,'.$invoice->id,
-            'subtotal'=>'nullable|numeric|min:0',
-            'tax_amount'=>'nullable|numeric|min:0',
-            'discount_amount'=>'nullable|numeric|min:0',
+            'subtotal'=>'nullable|numeric|min:0|gt:tax_amount|gt:discount_amount',
+            'tax_amount'=>'nullable|numeric|min:0|lt:subtotal',
+            'discount_amount'=>'nullable|numeric|min:0|lt:subtotal',
             'total_amount'=>'nullable|numeric|min:0',
         ]);
         try{
+            if(!($atts['total_amount']==$atts['subtotal']+$atts['tax_amount']-$atts['discount_amount'])){
+                return response()->json(['message'=>'total amount must be equal to subtotal + tax amount - discount amount'],400);
+            }
         $invoice->update($atts);
         $invoice->save();
         }catch(\Exception $e){
