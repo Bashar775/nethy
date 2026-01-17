@@ -15,8 +15,8 @@ class AnalysisController extends Controller
     public function all(Request $request){
         $this->authorize('analysis',User::class);
         $atts=$request([
-            'from'=>'required_with|date',
-            'to'=> 'required_with|date|after_or_equal:from',
+            'from'=>'required_with:to|date',
+            'to'=> 'required_with:from|date|after_or_equal:from',
         ]);
         if(!isset($atts['from'])){
             $atts['from']=now()->subMonth();
