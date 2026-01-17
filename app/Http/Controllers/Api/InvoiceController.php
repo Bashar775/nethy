@@ -100,10 +100,9 @@ class InvoiceController extends Controller
             return response()->json(['message'=>'Invoice not found'],404);
         }
         $atts=$request->validate([
-            'due_date'=>'nullable|date',
+            'due_date'=>'nullable|date|after:today',
             'notes'=>'nullable|string',
             'currency'=>'nullable|string|size:3',
-            'payment_status'=>'nullable|in:unpaid,paid,overdue',
             'invoice_date'=>'nullable|date',
             'invoice_number'=>'nullable|string|unique:invoices,invoice_number,'.$invoice->id,
             'subtotal'=>'nullable|numeric|min:0',
