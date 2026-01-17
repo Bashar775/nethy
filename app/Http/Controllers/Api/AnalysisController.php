@@ -46,7 +46,20 @@ class AnalysisController extends Controller
         foreach($confirmedOrders as $order){
             $productsSold += $order->number_of_items;
         }
-        return response()->json(['Total Revanue'=>$totalRevanue,'Total Profit'=>$totalProfit,'Total Customer Orders'=>$totalCustomerOrders,'New Users'=>$newUsers,'Products Sold'=>$productsSold],200);
+        $customers=User::where('is_employee',false)
+            ->whereBetween('created_at',[$atts['from'],$atts['to']])
+            ->get();
+            $payingCustomers=0;
+        foreach($customers as $customer){
+            $customerOrders=\App\Models\Order::where('user_id',$customer->id)
+                ->where('status','confirmed')
+                ->whereBetween('order_date',[$atts['from'],$atts['to']])
+                ->get();
+            if($customerOrders->count()>0){
+                $payingCustomers +=1;
+            }
+        }
+        return response()->json(['Total Revanue'=>$totalRevanue,'Total Profit'=>$totalProfit,'Total Customer Orders'=>$totalCustomerOrders,'New Users'=>$newUsers,'Products Sold'=>$productsSold,'number of customers'=>$customer->count(),'number of paying customers'=>$payingCustomers],200);
 
     }
     public function monthlyRevanue(Request $request){
