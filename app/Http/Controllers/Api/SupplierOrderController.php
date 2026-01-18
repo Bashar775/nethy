@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ImageResource;
 use App\Http\Resources\SupplierOrderResource;
 use App\Models\Product;
 use App\Models\StockMovment;
@@ -24,8 +25,16 @@ class SupplierOrderController extends Controller
     public function show($id)
     {
         $this->authorize('supplierOrder', User::class);
-        $order = SupplierOrder::findOrFail($id);
+        $order = SupplierOrder::find($id);
+        if(!$order){
+            return response()->json(['message'=>'Order not found'],404);
+        }
         $relatedProducts = $order->products;
+        foreach ($relatedProducts as $productData) {
+            $product = Product::find($productData->id);
+            $images = ImageResource::collection($product->images);
+            $productData['images'] = $images;
+        }
         return response()->json(['order'=>SupplierOrderResource::make($order),'related_products' => $relatedProducts], 200);
     }
     public function store(Request $request)

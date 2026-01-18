@@ -25,7 +25,10 @@ class OrderController extends Controller
     public function show($id)
     {
         $this->authorize('viewAnyOrder', User::class);
-        $order = Order::findOrFail($id);
+        $order = Order::find($id);
+        if(!$order){
+            return response()->json(['message'=>'Order not found'],404);
+        }
         $relatedProducts = $order->products;
         foreach ($relatedProducts as $productData){
             $product=Product::find($productData->id);

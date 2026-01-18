@@ -17,6 +17,7 @@ class SupplierOrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'supplier_id'=>$this->supplier_id,
             'supplier' => Supplier::where('id', $this->supplier_id)->first()->name ?? 'N/A',
             'supplier_order_number' => $this->supplier_order_number,
             'number_of_items' => $this->number_of_items,
