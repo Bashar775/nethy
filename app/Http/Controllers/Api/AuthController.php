@@ -226,17 +226,50 @@ class AuthController extends Controller
     public function me(Request $request){
         return UserResource::make($request->user());
     }
-    public function deleteUser(Request $request, $id){
-        $this->authorize('deleteUser', User::class);
-        $user = User::find($id);
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+    // public function deleteUser(Request $request, $id){
+    //     $this->authorize('deleteUser', User::class);
+    //     $user = User::find($id);
+    //     if (!$user) {
+    //         return response()->json(['message' => 'User not found'], 404);
+    //     }
+    //     if($request->user()->id == $user->id){
+    //         return response()->json(['message' => 'You cannot delete your own account'], 403);
+    //     }
+    //     $user->delete();
+    //     return response()->json(['message' => 'User deleted successfully']);
+    // }
+    public function banUser(Request $request,$id){
+        $this->authorize('banuser',User::class);
+        $user=User::find($id);
+        if(!$user){
+            return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
         }
-        if($request->user()->id == $user->id){
-            return response()->json(['message' => 'You cannot delete your own account'], 403);
+        if($user->id==$request->user()->id){
+            return response()->json(['message'=>'You cannot ban your own account'],403);
         }
-        $user->delete();
-        return response()->json(['message' => 'User deleted successfully']);
+        if($user->roles()->where('type','admin')->exists()){
+            return response()->json(['message'=>'You cannot ban an admin account'],403);
+        }
+        if(!$user->status){
+            return response()->json(['message'=>'user is already banned'],400);
+        }
+        $user->status=false;
+        $user->save();
+        return response()->json(['message'=>'user has been banned succeffuly'],200);
+
+    }
+    public function unbanUser(Request $request,$id){
+        $this->authorize('banuser',User::class);
+        $user=User::find($id);
+        if(!$user){
+            return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
+        }
+        if($user->status){
+            return response()->json(['message'=>'user is not banned'],400);
+        }
+        $user->status=true;
+        $user->save();
+        return response()->json(['message'=>'user has been unbanned succeffuly'],200);
     }
     public function updateRate(Request $request,$id){
         $this->authorize('browseUsers',User::class);
@@ -251,26 +284,26 @@ class AuthController extends Controller
         $user->save();
         return response()->json(['message'=>'rate has been updated succeffuly'],200);
     }
-    public function block(Request $request,$id){
-        $this->authorize('browseUsers',User::class);
-        $user=User::find($id);
-        if(!$user){
-            return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
-        }
-        $user->status=false;
-        $user->save();
-        return response()->json(['message'=>'user has been blocked succeffuly'],200);
-    }
-    public function unblock(Request $request,$id){
-        $this->authorize('browseUsers',User::class);
-        $user=User::find($id);
-        if(!$user){
-            return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
-        }
-        $user->status=true;
-        $user->save();
-        return response()->json(['message'=>'user has been unblocked succeffuly'],200);
-    }
+    // public function block(Request $request,$id){
+    //     $this->authorize('browseUsers',User::class);
+    //     $user=User::find($id);
+    //     if(!$user){
+    //         return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
+    //     }
+    //     $user->status=false;
+    //     $user->save();
+    //     return response()->json(['message'=>'user has been blocked succeffuly'],200);
+    // }
+    // public function unblock(Request $request,$id){
+    //     $this->authorize('browseUsers',User::class);
+    //     $user=User::find($id);
+    //     if(!$user){
+    //         return response()->json(['message'=>'user not found , what are you trying to do dude'],404);
+    //     }
+    //     $user->status=true;
+    //     $user->save();
+    //     return response()->json(['message'=>'user has been unblocked succeffuly'],200);
+    // }
     // public function updateUser(Request $request, $id){
     //     $this->authorize('editUser', User::class);
     //     $user = User::find($id);}

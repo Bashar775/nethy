@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'employee' => EnsureEmployee::class,
+            'notbanned' => App\Http\Middleware\EnsureNotBanned::class,
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

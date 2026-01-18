@@ -86,4 +86,9 @@ class UserPolicy
         Log::error('hi from policy - analysis');
         return $user->isAdmin() || $user->isInventory();
     }
+    public function banuser(User $user): bool
+    {
+        Log::error('hi from policy - banuser');
+        return $user->isAdmin() || $user->isInventory();
+    }
 }

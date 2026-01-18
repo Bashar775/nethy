@@ -62,24 +62,42 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $this->authorize('updateCategory',User::class);
-        $category=Category::findOrFail($id);
+        $category=Category::find($id);
+        if(!$category){
+            return response()->json(['message'=>'Category not found'],404);
+        }
+        if($category->name==='other'){
+            return response()->json(['message'=>'Cannot delete "other" category'],403);
+        }
+        if($category->products()->count() > 0){
+            $otherCategory=Category::where('name','other')->first();
+            if(!$otherCategory){
+                $otherCategory=Category::create([
+                    'name'=>'other',
+                    's_name'=>'other',
+                    'enabled'=>true,
+                ]);
+            }
+            Product::where('category_id',$category->id)
+                ->update(['category_id'=>$otherCategory->id]);
+        }
         $category->delete();
         return response()->json([
             'message'=>'Category deleted successfully',
         ],200);
     }
     //recheck this one
-    public function update(Request $request, $id)
-    {
-        $this->authorize('updateCategory', User::class);
-        $category = Category::find($id);
-        if(!$category){
-            return response()->json(['message'=>'category not found'],404);
-        }
-        $atts = $request->validate([
-            'name'=>'string|nullable',
-            's_name'=>'string|nullable']);
-        $category->update($atts);
-        return response()->json(['message'=>'category updated succefuly'],200);
-        }
+    // public function update(Request $request, $id)
+    // {
+    //     $this->authorize('updateCategory', User::class);
+    //     $category = Category::find($id);
+    //     if(!$category){
+    //         return response()->json(['message'=>'category not found'],404);
+    //     }
+    //     $atts = $request->validate([
+    //         'name'=>'string|nullable',
+    //         's_name'=>'string|nullable']);
+    //     $category->update($atts);
+    //     return response()->json(['message'=>'category updated succefuly'],200);
+    //     }
 }

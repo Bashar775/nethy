@@ -22,6 +22,8 @@ Route::post('/createemployees',[AuthController::class,'create']); //tested
 Route::get('/customers',[AuthController::class,'indexCustomers'])->middleware(['auth:sanctum', 'employee']); //tested
 Route::get('/employees',[AuthController::class,'indexEmployees'])->middleware(['auth:sanctum', 'employee']); //tested
 Route::get('/users/{id}',[AuthController::class,'show'])->middleware(['auth:sanctum', 'employee']); //tested
+Route::post('/banuser/{id}',[AuthController::class,'banUser'])->middleware(['auth:sanctum', 'employee']); //tested
+Route::post('/unbanuser/{id}',[AuthController::class,'unbanUser'])->middleware(['auth:sanctum', 'employee']); //tested
 //SUPPLIER ROUTES
 Route::get('/suppliers',[App\Http\Controllers\Api\SupplierController::class,'index'])->middleware(['auth:sanctum','employee']); //tested
 Route::get('/suppliers/{id}',[App\Http\Controllers\Api\SupplierController::class,'show'])->middleware(['auth:sanctum','employee']); //tested
