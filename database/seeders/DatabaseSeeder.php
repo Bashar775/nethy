@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -49,6 +50,14 @@ class DatabaseSeeder extends Seeder
             'name' => 'other',
             's_name' => 'other',
             'enabled' => true,
+        ]);
+        Supplier::create([
+            'name'=>'system',
+            'address'=>'HERE',
+            'phone'=>'12345',
+            'email'=>'supplier@dentalub.com',
+            'product_type'=>'every thing',
+            'notes'=>'this supplier is the system default supplier , this supplier cannot be deleted or it will cause problems, in case another supplier got removed this one will be the replacment by defalut'
         ]);
     }
 }

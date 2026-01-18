@@ -70,7 +70,7 @@ class InvoiceController extends Controller
     }
     public function destroy($id){
         $this->authorize('customerInvoice',User::class);
-        $invoice=Invoice::findOrFail($id);
+        $invoice=Invoice::find($id);
         if(!$invoice){
             return response()->json(['message'=>'Invoice not found'],404);
         }
@@ -95,7 +95,7 @@ class InvoiceController extends Controller
     }
     public function update(Request $request,$id){
         $this->authorize('customerInvoice',User::class);
-        $invoice=Invoice::findOrFail($id);
+        $invoice=Invoice::find($id);
         if(!$invoice){
             return response()->json(['message'=>'Invoice not found'],404);
         }

@@ -64,13 +64,16 @@ class OrderController extends Controller
                 ]);
                 $orderNumber = 'ORD-' .date('Y').date('M').'-'. $order->id;
                 $order->order_number=$orderNumber;
+                $order->save();
                 if (!$request->has('products') || count($atts['products']) === 0) {
-                    $order->save();
                     return $order;
                 }
                 $number_of_items=0;
                 foreach ($atts['products'] as $productData) {
                     $product = Product::findOrFail($productData['id']);
+                    if($product->status=='deleted'){
+                        throw new \Exception('there is a deleted product included in the order');
+                    }
                     $number_of_items+=$productData['quantity'];
                     $quantity = $productData['quantity'];
                     $lineSubtotal = $product->price * $quantity;
@@ -101,15 +104,15 @@ class OrderController extends Controller
         }
         return response()->json(['data' => $order, 'details' => $order->products()->get()]);
     }
-    public function destroy($id)
-    {
-        //add the policy later on
-        $this->authorize('updateOrder', User::class);
-        $order = Order::findOrFail($id);
-        $order->products()->detach();
-        $order->delete();
-        return response()->json(['message' => 'Order deleted successfully'], 200);
-    }
+    // public function destroy($id)
+    // {
+    //     //add the policy later on
+    //     $this->authorize('updateOrder', User::class);
+    //     $order = Order::findOrFail($id);
+    //     $order->products()->detach();
+    //     $order->delete();
+    //     return response()->json(['message' => 'Order deleted successfully'], 200);
+    // }
     public function confirm($id)
     {
         //add the policy later on
@@ -129,7 +132,8 @@ class OrderController extends Controller
                         return response()->json(['message' => 'Product not found'], 404);
                     }
                     $projectedQty = $product->stock_quantity - $productData['pivot']->quantity;
-                    if ($projectedQty < 0) {
+                    if($product->status=='deleted'){
+                    }elseif ($projectedQty < 0) {
                         $product->status = 'alertstock';
                     } elseif ($projectedQty <= 0) {
                         $product->status = 'outofstock';
@@ -180,7 +184,8 @@ class OrderController extends Controller
                     $projectedQty = $product->stock_quantity + $productData['pivot']->quantity;
                     Log::error('product quantity ' . $product->stock_quantity);
                     Log::error('projected qty ' . $projectedQty);
-                    if ($projectedQty < 0) {
+                    if($product->status=='deleted'){
+                    }elseif ($projectedQty < 0) {
                         $product->status = 'alertstock';
                     } elseif ($projectedQty <= 0) {
                         $product->status = 'outofstock';
@@ -230,6 +235,9 @@ class OrderController extends Controller
         $product = Product::find($atts['product_id']);
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
+        }
+        if($product->status=='deleted'){
+            return response()->json(['message'=>'the product sepcified is deleted from the system'],422);
         }
         if ($order && $product) {
             $quantity = $atts['quantity'];

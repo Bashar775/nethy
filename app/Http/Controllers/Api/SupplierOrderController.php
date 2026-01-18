@@ -58,12 +58,16 @@ class SupplierOrderController extends Controller
                 ]);
                 $supplier_order_number = 'S_ORD-'.date('Y').date('M') . '-'.$order->id;
                 $order->supplier_order_number=$supplier_order_number;
+                $order->save();
                 if (!$request->has('products') || count($atts['products']) === 0) {
                     return $order;
                 }
                 $number_of_items=0;
                 foreach ($atts['products'] as $productData) {
                     $product = Product::findOrFail($productData['id']);
+                    if($product->status=='deleted'){
+                        throw new \Exception('there is a deleted product included in the order');
+                    }
                     $number_of_items += $productData['quantity'];
                     // $discountAmount = 0;
                     // if ($product->discount_rate) {
@@ -94,17 +98,17 @@ class SupplierOrderController extends Controller
         }
         return response()->json(['data' => $order, 'details' => $order->products()->get()]);
     }
-    public function destroy($id)
-    {
-        $this->authorize('supplierOrder', User::class);
-        $order = SupplierOrder::find($id);
-        if(!$order){
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-        $order->products()->detach();
-        $order->delete();
-        return response()->json(['message' => 'Order deleted successfully'], 200);
-    }
+    // public function destroy($id)
+    // {
+    //     $this->authorize('supplierOrder', User::class);
+    //     $order = SupplierOrder::find($id);
+    //     if(!$order){
+    //         return response()->json(['message' => 'Order not found'], 404);
+    //     }
+    //     $order->products()->detach();
+    //     $order->delete();
+    //     return response()->json(['message' => 'Order deleted successfully'], 200);
+    // }
     public function confirm($id)
     {
         //add the policy later on
@@ -121,7 +125,8 @@ class SupplierOrderController extends Controller
                 foreach ($order->products as $productData) {
                     $product = Product::findOrFail($productData->id);
                     $projectedQty = $product->stock_quantity + $productData['pivot']->quantity;
-                    if ($projectedQty < 0) {
+                    if($product->status=='deleted'){
+                    }elseif ($projectedQty < 0) {
                         $product->status = 'alertstock';
                     } elseif ($projectedQty <= 0) {
                         $product->status = 'outofstock';
@@ -165,7 +170,8 @@ class SupplierOrderController extends Controller
                 foreach ($order->products as $productData) {
                     $product = Product::findOrFail($productData->id);
                     $projectedQty = $product->stock_quantity - $productData['pivot']->quantity;
-                    if ($projectedQty < 0) {
+                    if($product->status=='deleted'){
+                    }elseif ($projectedQty < 0) {
                         $product->status = 'alertstock';
                     } elseif ($projectedQty <= 0) {
                         $product->status = 'outofstock';
@@ -215,6 +221,9 @@ class SupplierOrderController extends Controller
         $product = Product::find($atts['product_id']);
         if(!$product){
             return response()->json(['message' => 'Product not found'], 404);
+        }
+        if ($product->status == 'deleted') {
+            return response()->json(['message' => 'the product sepcified is deleted from the system'], 422);
         }
         if ($order && $product) {
             // $discountAmount = 0;

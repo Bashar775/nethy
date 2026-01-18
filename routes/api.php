@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AnalysisController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ Route::get('/products/{id}',[App\Http\Controllers\Api\ProductController::class,'
 Route::post('/createproduct',[App\Http\Controllers\Api\ProductController::class,'store'])->middleware(['auth:sanctum','employee']); //tested
 Route::post('/updateproduct/{id}',[App\Http\Controllers\Api\ProductController::class, 'update'])->middleware(['auth:sanctum','employee']); //tested
 Route::delete('/deleteproduct/{id}',[App\Http\Controllers\Api\ProductController::class,'destroy'])->middleware(['auth:sanctum','employee']); //tested
+Route::post('/restoreproduct/{id}',[ProductController::class,'restore'])->middleware(['auth:sanctum', 'employee']);
 //CATEGORY ROUTES
 Route::get('/categories',[App\Http\Controllers\Api\CategoryController::class,'index']); //tested
 Route::post('/createcategory',[App\Http\Controllers\Api\CategoryController::class,'store'])->middleware(['auth:sanctum','employee']); //tested
@@ -49,7 +51,7 @@ Route::get('/customerorders/{id}',[OrderController::class,'show'])->middleware([
 Route::post('/createorder',[OrderController::class,'store'])->middleware(['auth:sanctum']);
 Route::post('/confirmcustomerorder/{id}',[OrderController::class,'confirm'])->middleware(['auth:sanctum', 'employee']);
 Route::post('/cancelcustomerorder/{id}',[OrderController::class,'cancel'])->middleware(['auth:sanctum', 'employee']);
-Route::post('/deletecustomerorder/{id}',[OrderController::class,'destroy'])->middleware(['auth:sanctum', 'employee']);
+// Route::post('/deletecustomerorder/{id}',[OrderController::class,'destroy'])->middleware(['auth:sanctum', 'employee']);
 Route::post('/additemtoorder/{id}',[OrderController::class,'addItem'])->middleware(['auth:sanctum', 'employee']);
 Route::post('/removeitemfromorder/{id}',[OrderController::class,'removeItem'])->middleware(['auth:sanctum', 'employee']);
 Route::post('/updateorderheaders/{id}',[OrderController::class,'update'])->middleware(['auth:sanctum', 'employee']);

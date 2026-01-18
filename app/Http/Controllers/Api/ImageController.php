@@ -18,7 +18,10 @@ class ImageController extends Controller
     use AuthorizesRequests;
     public function destroy(Request $request,$id){
     $this->authorize('createProduct',User::class);
-    $image=Image::findOrFail($id);
+    $image=Image::find($id);
+    if(!$image){
+        return response()->json(['message'=>'Image not found'],404);
+    }
     if($image){
         try {
             // Delete file from storage

@@ -216,21 +216,43 @@ class ProductController extends Controller
         if(!$product){
             return response()->json(['message'=>'Product not found'],404);
         }
-        try {
-            $images=$product->images()->get();
-            Log::error($images);
-            foreach($images as $image){
-                Storage::disk('public')->delete($image->path);
-            }
-            $product->delete();
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Failed to delete product',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        // try {
+        //     $images=$product->images()->get();
+        //     Log::error($images);
+        //     foreach($images as $image){
+        //         Storage::disk('public')->delete($image->path);
+        //     }
+            $product->status='deleted';
+            $product->save();
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'message' => 'Failed to delete product',
+        //         'error' => $e->getMessage(),
+        //     ], 500);
+        // }
         return response()->json([
-            'message' => 'Product deleted successfully',
+            'message' => 'Product deleted successfully Note:the products still in the DB for safty reasons you can always restore it later',
         ], 200);
+    }
+    public function restore(Request $request,$id){
+        $this->authorize('createProduct', User::class);
+        $product=Product::find($id);
+        if(!$product){
+            return response()->json(['message'=>'product not found'],404);
+        }
+        if($product->status!='deleted'){
+            return response()->json(['message'=>'this product is not even deleted'],402);
+        }
+        if ($product->stock_quantity < 0) {
+            $product->status = 'alertstock';
+        } elseif ($product->stock_quantity <= 0) {
+            $product->status = 'outofstock';
+        } elseif ($product->stock_quantity < $product->stock_alert) {
+            $product->status = 'lowstock';
+        } else {
+            $product->status = 'instock';
+        }
+        $product->save();
+        return response()->json(['message'=>'product restored successfuly'],200);
     }
 }
