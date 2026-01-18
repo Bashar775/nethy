@@ -319,6 +319,7 @@ class OrderController extends Controller
     {
         $this->authorize('updateOrder', User::class);
         $atts = $request->validate([
+            'order_number'=>'nullable|string|unique:orders,order_number,'.$id,
             'currency' => 'nullable|string|max:3',
             'payment_method' => 'nullable|string|max:255',
             'notes' => 'string|nullable',
@@ -328,6 +329,9 @@ class OrderController extends Controller
             return response()->json(['message'=>'Order not found'],404);
         }
         if ($order) {
+            if(isset($atts['order_number'])){
+                $order->order_number = $atts['order_number'];
+            }
             if (isset($atts['currency'])) {
                 $order->currency = $atts['currency'];
             }

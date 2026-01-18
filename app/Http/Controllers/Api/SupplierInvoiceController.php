@@ -28,11 +28,12 @@ class SupplierInvoiceController extends Controller
     {
         $this->authorize('SupplierInvoice', User::class);
         $atts = $request->validate([
+            'invoice_number'=>'nullable|string|unique:supplier_invoices,invoice_number',
             'order_id' => 'required|exists:supllier_orders,id',
             'due_date' => 'nullable|date',
             'notes' => 'nullable|string',
         ]);
-        $order = SupplierOrder::findOrFail($atts['order_id']);
+        $order = SupplierOrder::find($atts['order_id']);
         if (!$order) {
             return response()->json(['message' => 'order not found to generate the invoice'], 404);
         }
@@ -40,7 +41,7 @@ class SupplierInvoiceController extends Controller
             $invoice = SupplierInvoice::create([
                 'supplier_id' => $order->supplier_id,
                 'supplier_order_id' => $order->id,
-                'invoice_number' => 'placeholder',
+                'invoice_number' =>$atts['invoice_number'] ?? 'placeholder',
                 'invoice_date' => now(),
                 'subtotal' => $order->subtotal,
                 'tax_amount' => $order->tax_amount,
@@ -50,8 +51,9 @@ class SupplierInvoiceController extends Controller
                 'payment_status' => 'unpaid',
                 'notes' => $atts['notes'] ?? 'Invoice generated for order #' . $order->id
             ]);
+            if(!isset($atts['invoice_number'])){
             $invoice->invoice_number = 'S-INV-' . date('Y') . date('M') . '-' . $invoice->id;
-            $invoice->save();
+            $invoice->save();}
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error generating invoice: ' . $e->getMessage()], 500);
         }
@@ -112,10 +114,13 @@ class SupplierInvoiceController extends Controller
             'payment_status' => 'nullable|in:unpaid,paid,overdue',
             'invoice_date' => 'nullable|date',
             'invoice_number' => 'nullable|string|unique:supplier_invoices,invoice_number,' . $invoice->id,
-            'subtotal' => 'nullable|numeric|min:0',
-            'tax_amount' => 'nullable|numeric|min:0',
+            'subtotal' => 'nullable|numeric|min:0|gt:tax_amount',
+            'tax_amount' => 'nullable|numeric|min:0|lt:subtotal',
             'total_amount' => 'nullable|numeric|min:0',
         ]);
+        if(!($atts['total_amount']==$atts['subtotal']+$atts['tax_amount'])){
+            return response()->json(['message'=>'total amount must be equal to subtotal + tax amount'],400);
+        }
         try{
         $invoice->update($atts);
         $invoice->save();}catch(\Exception $e){
@@ -131,14 +136,17 @@ class SupplierInvoiceController extends Controller
             'supplier_order_id' => 'required|exists:supplier_orders,id',
             'invoice_number' => 'required|string|unique:supplier_invoices,invoice_number',
             'invoice_date' => 'required|date',
-            'subtotal' => 'required|numeric|min:0',
-            'tax_amount' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0|gt:tax_amount',
+            'tax_amount' => 'required|numeric|min:0|lt:subtotal',
             'total_amount' => 'required|numeric|min:0',
             'currency' => 'required|string|size:3',
             'due_date' => 'nullable|date',
             'payment_status' => 'required|in:unpaid,paid,overdue',
             'notes' => 'nullable|string',
         ]);
+        if(!($atts['total_amount']==$atts['subtotal']+$atts['tax_amount'])){
+            return response()->json(['message'=>'total amount must be equal to subtotal + tax amount'],400);
+        }
         try{
         $invoice = SupplierInvoice::create($atts);
     }catch(\Exception $e){

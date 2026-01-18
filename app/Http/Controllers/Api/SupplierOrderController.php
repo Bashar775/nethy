@@ -41,6 +41,7 @@ class SupplierOrderController extends Controller
     {
         $this->authorize('supplierOrder', User::class);
         $atts = $request->validate([
+            'supplier_order_number'=>'nullable|string|unique:supplier_orders,supplier_order_number',
             'supplier_id' => 'required|exists:suppliers,id',
             'currency' => 'nullable|string|max:3',
             'payment_method' => 'nullable|string|max:255',
@@ -55,7 +56,7 @@ class SupplierOrderController extends Controller
                 $order = SupplierOrder::create([
                     'supplier_id' => $atts['supplier_id'],
                     'currency' => $atts['currency'] ?? 'SEK',
-                    'supplier_order_number' =>'placeholder',
+                    'supplier_order_number' =>$atts['supplier_order_number'] ?? 'placeholder',
                     'payment_method' => $atts['payment_method'] ?? null,
                     'notes' => $atts['notes'] ?? null,
                     'subtotal' => 0,
@@ -65,9 +66,10 @@ class SupplierOrderController extends Controller
                     'order_date' => now(),
                     'status' => 'pending',
                 ]);
+                if(!isset($atts['supplier_order_number'])){
                 $supplier_order_number = 'S_ORD-'.date('Y').date('M') . '-'.$order->id;
                 $order->supplier_order_number=$supplier_order_number;
-                $order->save();
+                $order->save();}
                 if (!$request->has('products') || count($atts['products']) === 0) {
                     return $order;
                 }
@@ -311,12 +313,16 @@ class SupplierOrderController extends Controller
     {
         $this->authorize('supplierOrder', User::class);
         $atts = $request->validate([
+            'supplier_order_number'=>'nullable|string|unique:supplier_orders,supplier_order_number,'.$id,
             'currency' => 'nullable|string|max:3',
             'payment_method' => 'nullable|string|max:255',
             'notes' => 'string|nullable',
         ]);
-        $order = SupplierOrder::findOrFail($id);
+        $order = SupplierOrder::find($id);
         if ($order) {
+            if(isset($atts['supplier_order_number'])){
+                $order->supplier_order_number = $atts['supplier_order_number'];
+            }
             if (isset($atts['currency'])) {
                 $order->currency = $atts['currency'];
             }

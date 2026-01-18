@@ -129,14 +129,18 @@ class InvoiceController extends Controller
             'order_id' => 'required|exists:orders,id',
             'invoice_number' => 'required|string|unique:invoices,invoice_number',
             'invoice_date' => 'required|date',
-            'subtotal' => 'required|numeric|min:0',
-            'tax_amount' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0|gt:tax_amount|gt:discount_amount',
+            'tax_amount' => 'required|numeric|min:0|lt:subtotal',
+            'discount_amount' => 'nullable|numeric|min:0|lt:subtotal',
             'total_amount' => 'required|numeric|min:0',
             'currency' => 'required|string|size:3',
             'due_date' => 'nullable|date',
             'payment_status' => 'required|in:unpaid,paid,overdue',
             'notes' => 'nullable|string',
         ]);
+        if(!($atts['total_amount']==$atts['subtotal']+$atts['tax_amount']-$atts['discount_amount']??0)){
+            return response()->json(['message'=>'total amount must be equal to subtotal + tax amount - discount amount'],400);
+        }
         try {
             $invoice = Invoice::create($atts);
         } catch (\Exception $e) {
