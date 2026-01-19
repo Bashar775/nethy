@@ -156,6 +156,7 @@ class SupplierOrderController extends Controller
                         'quantity_ordered' => $productData['pivot']->quantity,
                         'quantity_in_stock' => $projectedQty,
                         'return' => false,
+                        'notes' => 'supplier order with number ' . $order->supplier_order_number . ' added ' . $productData['pivot']->quantity . ' of product ' . $product->name . ' to the inventoery'
                     ]);
                 }
             });
@@ -201,6 +202,7 @@ class SupplierOrderController extends Controller
                         'quantity_ordered' => $productData['pivot']->quantity,
                         'quantity_in_stock' => $projectedQty,
                         'return' => true,
+                        'notes' => 'canceling supplier order with number ' . $order->supplier_order_number . ' removed back ' . $productData['pivot']->quantity . ' of product ' . $product->name . ' from the inventoery'
                     ]);
                 }
             });

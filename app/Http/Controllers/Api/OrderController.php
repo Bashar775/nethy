@@ -156,6 +156,7 @@ class OrderController extends Controller
                         'quantity_ordered' => $productData['pivot']->quantity,
                         'quantity_in_stock' => $projectedQty,
                         'return' => false,
+                        'notes'=>'customer order with number '.$order->order_number.' removed '.$productData['pivot']->quantity.' of product '.$product->name.' from the inventoery'
                     ]);
                 }
             });
@@ -208,6 +209,7 @@ class OrderController extends Controller
                         'quantity_ordered' => $productData['pivot']->quantity,
                         'quantity_in_stock' => $projectedQty,
                         'return' => true,
+                        'notes'=>'canceling customer order with number '.$order->order_number.' added back '.$productData['pivot']->quantity.' of product '.$product->name.' to the inventoery'
                     ]);
                 }
             });
