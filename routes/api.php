@@ -103,7 +103,7 @@ Route::post('/seed',[AuthController::class, 'seed']);
 //ANALYSIS ROUTES
 Route::post('/topcards',[App\Http\Controllers\Api\AnalysisController::class,'all'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/productspercategory',[AnalysisController::class, 'numberOfProductsPerCategory'])->middleware(['auth:sanctum','employee','notbanned']);
-Route::post('/monthlyrevanue',[AnalysisController::class,'monthlyRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
+// Route::post('/monthlyrevanue',[AnalysisController::class,'monthlyRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::post('/monthlyprofit',[AnalysisController::class,'monthlyProfit'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/topproducts',[AnalysisController::class, 'topProducts'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/totalrevanue',[AnalysisController::class, 'totalRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
@@ -111,3 +111,4 @@ Route::get('/totalcustomers',[AnalysisController::class, 'totalCustomers'])->mid
 Route::get('/orderstoday',[AnalysisController::class, 'ordersToday'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/fiverecentorders',[AnalysisController::class, 'fiveRecentOrders'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/totalproducts',[AnalysisController::class, 'totalProducts'])->middleware(['auth:sanctum', 'employee', 'notbanned']);
+Route::post('/salestoorders',[AnalysisController::class, 'salesToOrders'])->middleware(['auth:sanctum', 'employee', 'notbanned']);

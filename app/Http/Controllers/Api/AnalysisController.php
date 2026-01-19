@@ -63,31 +63,31 @@ class AnalysisController extends Controller
         return response()->json(['Total Revanue'=>$totalRevanue,'Total Profit'=>$totalProfit,'Total Customer Orders'=>$totalCustomerOrders,'New Users'=>$newUsers,'Products Sold'=>$productsSold,'number of customers'=>$customers->count(),'number of paying customers'=>$payingCustomers],200);
 
     }
-    public function monthlyRevanue(Request $request){
-        $this->authorize('analysis',User::class);
-        $atts=$request->validate([
-            'year'=>'nullable|integer|min:2000|max:'.now()->year,
-        ]);
-        if(!isset($atts['year'])){
-            $atts['year']=now()->year;
-        }
-        $monthlyRevanue=[];
-        for($month=1;$month<=12;$month++){
-            $confirmedOrders=\App\Models\Order::where('status','confirmed')
-                ->whereYear('order_date',$atts['year'])
-                ->whereMonth('order_date',$month)
-                ->get();
-            $totalamount=0;
-            foreach($confirmedOrders as $order){
-                $totalamount += $order->total_amount;
-            }
-            $monthlyRevanue[]=[
-                'month'=>$month,
-                'total_revanue'=>$totalamount
-            ];
-        }
-        return response()->json(['monthly_revanue'=>$monthlyRevanue],200);
-    }
+    // public function monthlyRevanue(Request $request){
+    //     $this->authorize('analysis',User::class);
+    //     $atts=$request->validate([
+    //         'year'=>'nullable|integer|min:2000|max:'.now()->year,
+    //     ]);
+    //     if(!isset($atts['year'])){
+    //         $atts['year']=now()->year;
+    //     }
+    //     $monthlyRevanue=[];
+    //     for($month=1;$month<=12;$month++){
+    //         $confirmedOrders=\App\Models\Order::where('status','confirmed')
+    //             ->whereYear('order_date',$atts['year'])
+    //             ->whereMonth('order_date',$month)
+    //             ->get();
+    //         $totalamount=0;
+    //         foreach($confirmedOrders as $order){
+    //             $totalamount += $order->total_amount;
+    //         }
+    //         $monthlyRevanue[]=[
+    //             'month'=>$month,
+    //             'total_revanue'=>$totalamount
+    //         ];
+    //     }
+    //     return response()->json(['monthly_revanue'=>$monthlyRevanue],200);
+    // }
     public function monthlyProfit(Request $request){
         $this->authorize('analysis',User::class);
         $atts=$request->validate([
@@ -116,7 +116,8 @@ class AnalysisController extends Controller
             }
             $monthlyProfit[]=[
                 'month'=>$month,
-                'total_profit'=>$totalamount-$totalamountSpent
+                'total_profit'=>$totalamount-$totalamountSpent,
+                'total_revanue'=>$totalamount
             ];
         }
         return response()->json(['monthly_profit'=>$monthlyProfit],200);
@@ -185,5 +186,31 @@ class AnalysisController extends Controller
     }
     public function totalProducts(){
         return Product::all()->count();
+    }
+    public function salesToOrders(Request $request){
+        $this->authorize('analysis', User::class);
+        $atts = $request->validate([
+            'year' => 'nullable|integer|min:2000|max:' . now()->year,
+        ]);
+        if (!isset($atts['year'])) {
+            $atts['year'] = now()->year;
+        }
+        $salesToOrders = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $confirmedOrders = \App\Models\Order::where('status', 'confirmed')
+                ->whereYear('order_date', $atts['year'])
+                ->whereMonth('order_date', $month)
+                ->get();
+            $totalamount = 0;
+            foreach ($confirmedOrders as $order) {
+                $totalamount += $order->total_amount;
+            }
+            $salesToOrders[] = [
+                'month' => $month,
+                'sales' => $totalamount,
+                'orders'=>$confirmedOrders->count()
+            ];
+        }
+        return response()->json(['monthly_revanue' => $salesToOrders], 200);
     }
 }
