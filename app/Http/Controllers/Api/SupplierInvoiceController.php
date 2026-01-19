@@ -46,7 +46,7 @@ class SupplierInvoiceController extends Controller
                 'subtotal' => $order->subtotal,
                 'tax_amount' => $order->tax_amount,
                 'total_amount' => $order->total_amount,
-                'currnecy' => $order->currency ?? 'SEK',
+                'currency' => $order->currency ?? 'SEK',
                 'due_date' => $atts['due_date'] ?? null,
                 'payment_status' => 'unpaid',
                 'notes' => $atts['notes'] ?? 'Invoice generated for order #' . $order->id
