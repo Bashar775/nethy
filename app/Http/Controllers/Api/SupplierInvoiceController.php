@@ -29,7 +29,7 @@ class SupplierInvoiceController extends Controller
         $this->authorize('SupplierInvoice', User::class);
         $atts = $request->validate([
             'invoice_number'=>'nullable|string|unique:supplier_invoices,invoice_number',
-            'order_id' => 'required|exists:supllier_orders,id',
+            'order_id' => 'required|exists:supplier_orders,id',
             'due_date' => 'nullable|date',
             'notes' => 'nullable|string',
         ]);
