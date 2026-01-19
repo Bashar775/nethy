@@ -185,7 +185,7 @@ class AnalysisController extends Controller
         return response()->json(['data'=>$sorted],200);
     }
     public function totalProducts(){
-        return Product::all()->count();
+        return response()->json(['data'=>Product::all()->count()]);
     }
     public function salesToOrders(Request $request){
         $this->authorize('analysis', User::class);
