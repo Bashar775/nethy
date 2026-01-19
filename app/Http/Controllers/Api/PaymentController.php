@@ -26,11 +26,15 @@ class PaymentController extends Controller
     {
         $this->authorize('payment', User::class);
         $atts = $request->validate([
+            //customer_invoice or supplier_nvoice
             'invoice_type' => 'required|in:customer_invoice,supplier_invoice',
             'invoice_id' => 'required|integer',
+            //order or supplier_order
             'payable_type' => 'required|in:order,supplier_order',
             'payable_id' => 'required|integer',
+            //incoming or outgoing
             'payment_type' => 'required|in:incoming,outgoing',
+            //customer or supplier
             'payer_type' => 'required|in:customer,supplier',
             'payer_id' => 'required|integer',
             'status' => 'required|in:pending,completed,failed,refunded',

@@ -348,11 +348,11 @@ class AuthController extends Controller
             $user->email = $atts['email'];
             $user->sendEmailVerificationNotification();
         }
+        $user->save();
         if(isset($atts['email']) || isset($atts['password'])){
             // Log out from all devices
             $user->tokens()->delete();
         }
-        $user->save();
         return response()->json([
             'message' => 'user instance has been updated successfully',
             'user' => UserResource::make($user),
