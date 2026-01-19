@@ -183,4 +183,7 @@ class AnalysisController extends Controller
         $sorted=$sorted->values()->all();
         return response()->json(['data'=>$sorted],200);
     }
+    public function totalProducts(){
+        return Product::all()->count();
+    }
 }

@@ -110,3 +110,4 @@ Route::get('/totalrevanue',[AnalysisController::class, 'totalRevanue'])->middlew
 Route::get('/totalcustomers',[AnalysisController::class, 'totalCustomers'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/orderstoday',[AnalysisController::class, 'ordersToday'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/fiverecentorders',[AnalysisController::class, 'fiveRecentOrders'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/totalproducts',[AnalysisController::class, 'totalProducts'])->middleware(['auth:sanctum', 'employee', 'notbanned']);

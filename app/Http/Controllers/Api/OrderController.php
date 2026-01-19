@@ -63,7 +63,7 @@ class OrderController extends Controller
                     'discount_amount' => 0,
                     'total_amount' => 0,
                     'order_date' => now(),
-                    'status' => 'pending',
+                    'status' => 'unchecked',
                 ]);
                 $orderNumber = 'ORD-' .date('Y').date('M').'-'. $order->id;
                 $order->order_number=$orderNumber;
@@ -116,7 +116,7 @@ class OrderController extends Controller
     //     $order->delete();
     //     return response()->json(['message' => 'Order deleted successfully'], 200);
     // }
-    public function confirm($id)
+    public function confirm(Request $request,$id)
     {
         //add the policy later on
         $this->authorize('updateOrder', User::class);
@@ -126,6 +126,9 @@ class OrderController extends Controller
         }
         if ($order->status == 'confirmed') {
             return response()->json(['message' => 'you cannot confirm the same order twice'], 400);
+        }
+        if($order->status == 'unchecked'){
+            return response()->json(['message'=>'you cannot confirm the order until the customer checkout it , anyway how are you seeing this :('],403);
         }
         try {
             DB::transaction(function () use ($order) {
@@ -220,19 +223,26 @@ class OrderController extends Controller
         $order->save();
         return response()->json(['message' => 'Order canceled successfully'], 200);
     }
-    public function addItem(Request $request, $id)
+    public function addItem(Request $request)
     {
-        $this->authorize('updateOrder', User::class);
         $atts = $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
-        $order = Order::find($id);
+        $order = Order::where('user_id',$request->user()->id)->where('status','unchecked')->first();
+
         if(!$order){
-            return response()->json(['message'=>'Order not found'],404);
+            $this->store($request);
+            $order = Order::where('user_id',$request->user()->id)->where('status','unchecked')->first();
+            if(!$order){
+                return response()->json(['message'=>'sorry something went wrong call the support team'],422);
+            }
         }
-        if($order->status =='confirmed'){
-            return response()->json(['message'=>'confirmed orders cannot be modified'],400);
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'this is not your order to modify only the customer who made the order can modify it'], 403);
+        }
+        if ($order->status !== 'unchecked') {
+            return response()->json(['message' => 'only unchecked orders can be modified by customer if your order is pending you can return it to unchecked state but if it is confirmed you need to call the support team to cancel your order'], 422);
         }
         if ($order->products()->where('product_id', $atts['product_id'])->exists()) {
             return response()->json(['error' => 'This product is already included in the order if you want to modify the quantity you can remove the product cart and add another one.'], 422);
@@ -274,7 +284,6 @@ class OrderController extends Controller
     }
     public function removeItem(Request $request, $id)
     {
-        $this->authorize('updateOrder', User::class);
         $atts = $request->validate([
             'product_id' => 'required|exists:products,id',
         ]);
@@ -282,8 +291,11 @@ class OrderController extends Controller
         if(!$order){
             return response()->json(['message'=>'Order not found'],404);
         }
-        if ($order->status == 'confirmed') {
-            return response()->json(['message' => 'confirmed orders cannot be modified'], 400);
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'this is not your order to modify only the customer who made the order can modify it'], 403);
+        }
+        if ($order->status !== 'unchecked') {
+            return response()->json(['message' => 'only unchecked orders can be modified by customer if your order is pending you can return it to unchecked state but if it is confirmed you need to call the support team to cancel your order'], 422);
         }
         $product = Product::find($atts['product_id']);
         if (!$product) {
@@ -319,7 +331,6 @@ class OrderController extends Controller
     // }
     public function update(Request $request, $id)
     {
-        $this->authorize('updateOrder', User::class);
         $atts = $request->validate([
             'order_number'=>'nullable|string|unique:orders,order_number,'.$id,
             'currency' => 'nullable|string|max:3',
@@ -329,6 +340,12 @@ class OrderController extends Controller
         $order = Order::find($id);
         if(!$order){
             return response()->json(['message'=>'Order not found'],404);
+        }
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'this is not your order to modify only the customer who made the order can modify it'], 403);
+        }
+        if ($order->status !== 'unchecked') {
+            return response()->json(['message' => 'only unchecked orders can be modified by customer if your order is pending you can return it to unchecked state but if it is confirmed you need to call the support team to cancel your order'], 422);
         }
         if ($order) {
             if(isset($atts['order_number'])){
@@ -347,6 +364,16 @@ class OrderController extends Controller
             return response()->json(['message' => 'Order updated successfully'], 200);
         } else {
             return response()->json(['message' => 'Order not found'], 404);
+        }
+    }
+    public function checkout(Request $request,$id){
+        $order=Order::where('user_id',$request->user()->id)->where('status','unchecked')->get();
+        if($order->count>1){
+            return response()->json(['message'=>'you have more than one unchecked order and this is problomatic pleas call the support team which is me who is writing the code :)'],422);
+        }
+        $order=$order->first();
+        if(!$order){
+            return response()->json(['message'=>'Order not found'],404);
         }
     }
 }
