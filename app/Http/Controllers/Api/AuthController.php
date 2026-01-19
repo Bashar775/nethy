@@ -123,7 +123,6 @@ class AuthController extends Controller
             'phone' => 'nullable|string|max:20|unique:users,phone',
             'address' => 'nullable|string|max:500',
             'password'=>'string|required|confirmed',
-            'is_employee'=>'boolean|required_with:roles',
             'roles'=>'array|required_with:is_employee',
             'roles.*'=>'string|exists:roles,type'
         ]);
@@ -138,7 +137,7 @@ class AuthController extends Controller
                         'phone' =>$atts['phone'],
                         'address' => $atts['address'] ?? null,
                         'password' => Hash::make($atts['password']),
-                        'is_employee' => $atts['is_employee'] ?? false,
+                        'is_employee' =>true,
                         'email_verified_at' => now()
                     ]);
                     if ($user->is_employee && isset($atts['roles'])) {
@@ -322,5 +321,42 @@ class AuthController extends Controller
     //         'message' => 'Password reset link has been sent to your email address.'
     //     ]);
     // }
+    public function update(Request $request){
+        $user=$request->user();
+        $atts=$request->validate([
+            'name'=>'string|unique:users,name,'.$user->id,
+            'email'=>'string|email|unique:users,email,'.$user->id,
+            'phone' => 'nullable|string|max:20|unique:users,phone,'.$user->id,
+            'address' => 'nullable|string|max:500',
+            'password'=>'string|confirmed',
+        ]);
+        if(isset($atts['password'])){
+            $atts['password']=Hash::make($atts['password']);
+            $user->password=$atts['password'];
+        }
+        if(isset($atts['name'])){
+            $user->name=$atts['name'];
+        }
+        if(isset($atts['phone'])){
+            $user->phone=$atts['phone'];
+        }
+        if(isset($atts['address'])){
+            $user->address=$atts['address'];
+        }
+        if(isset($atts['email']) && $atts['email'] != $user->email){
+            $user->email_verified_at = null;
+            $user->email = $atts['email'];
+            $user->sendEmailVerificationNotification();
+        }
+        if(isset($atts['email']) || isset($atts['password'])){
+            // Log out from all devices
+            $user->tokens()->delete();
+        }
+        $user->save();
+        return response()->json([
+            'message' => 'user instance has been updated successfully',
+            'user' => UserResource::make($user),
+        ], 200);
+    }
 
 }

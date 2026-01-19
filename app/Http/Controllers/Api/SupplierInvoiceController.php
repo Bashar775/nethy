@@ -111,7 +111,6 @@ class SupplierInvoiceController extends Controller
             'due_date' => 'nullable|date',
             'notes' => 'nullable|string',
             'currency' => 'nullable|string|size:3',
-            'payment_status' => 'nullable|in:unpaid,paid,overdue',
             'invoice_date' => 'nullable|date',
             'invoice_number' => 'nullable|string|unique:supplier_invoices,invoice_number,' . $invoice->id,
             'subtotal' => 'nullable|numeric|min:0|gt:tax_amount',

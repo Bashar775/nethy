@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -132,5 +133,54 @@ class AnalysisController extends Controller
             ];
         }
         return response()->json(['total_number_of_products'=>$numOfProducts,'data'=>$data],200);
+    }
+    public function totalRevanue(){
+        $this->authorize('analysis',User::class);
+        $confirmedOrders=\App\Models\Order::where('status','confirmed')->get();
+        $totalamount=0;
+        foreach($confirmedOrders as $order){
+            $totalamount += $order->total_amount;
+        }
+        return response()->json(['total_revanue'=>$totalamount],200);
+    }
+    public function totalcustomers(){
+        $this->authorize('analysis',User::class);
+        $customers=User::where('is_employee',false)->get();
+        return response()->json(['total_customers'=>$customers->count()],200);
+    }
+    public function orderstoday(){
+        $this->authorize('analysis',User::class);
+        $confirmedOrders=\App\Models\Order::where('status','confirmed')
+            ->whereDate('order_date',now()->toDateString())
+            ->get();
+        return response()->json(['total_orders_today'=>$confirmedOrders->count()],200);
+    }
+    public function fiverecentorders(){
+        $this->authorize('analysis',User::class);
+        $recentOrders=\App\Models\Order::where('status','confirmed')
+            ->orderBy('order_date','desc')
+            ->take(5)
+            ->get();
+        return response()->json(['data'=>\App\Http\Resources\OrderResource::collection($recentOrders)],200);
+    }
+    public function topProducts(){
+        $this->authorize('analysis',User::class);
+        $products=Product::all();
+        $maxproduct=[];
+        foreach($products as $product){
+            $totalSold=0;
+            $orders=$product->orders()->where('status','confirmed')->get();
+            foreach($orders as $order){
+                $totalSold += $order->pivot->quantity;
+            }
+            $maxproduct[]=[
+                'product_id'=>$product->id,
+                'product_name'=>$product->name,
+                'total_sold'=>$totalSold
+            ];
+        }
+        $sorted=collect($maxproduct)->sortByDesc('total_sold');
+        $sorted=$sorted->values()->all();
+        return response()->json(['data'=>$sorted],200);
     }
 }

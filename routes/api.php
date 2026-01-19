@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Models\User;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,9 @@ Route::get('/employees',[AuthController::class,'indexEmployees'])->middleware(['
 Route::get('/users/{id}',[AuthController::class,'show'])->middleware(['auth:sanctum', 'employee','notbanned']); //tested
 Route::post('/banuser/{id}',[AuthController::class,'banUser'])->middleware(['auth:sanctum', 'employee','notbanned']); //tested
 Route::post('/unbanuser/{id}',[AuthController::class,'unbanUser'])->middleware(['auth:sanctum', 'employee','notbanned']); //tested
+Route::post('/updateuser',[AuthController::class,'update'])->middleware(['auth:sanctum','notbanned']); //tested
+Route::get('/me',[AuthController::class,'me'])->middleware(['auth:sanctum','notbanned']); //tested
+Route::post('/updateuserrate',[AuthController::class,'updateRate'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 //SUPPLIER ROUTES
 Route::get('/suppliers',[App\Http\Controllers\Api\SupplierController::class,'index'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 Route::get('/suppliers/{id}',[App\Http\Controllers\Api\SupplierController::class,'show'])->middleware(['auth:sanctum','employee','notbanned']); //tested
@@ -97,7 +101,12 @@ Route::delete('/deleteimage/{id}',[App\Http\Controllers\Api\ImageController::cla
 //just for testing
 Route::post('/seed',[AuthController::class, 'seed']);
 //ANALYSIS ROUTES
-Route::post('/analysis/all',[App\Http\Controllers\Api\AnalysisController::class,'all'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::post('/topcards',[App\Http\Controllers\Api\AnalysisController::class,'all'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/productspercategory',[AnalysisController::class, 'numberOfProductsPerCategory'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::post('/monthlyrevanue',[AnalysisController::class,'monthlyRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::post('/monthlyprofit',[AnalysisController::class,'monthlyProfit'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/topproducts',[AnalysisController::class, 'topProducts'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/totalrevanue',[AnalysisController::class, 'totalRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/totalcustomers',[AnalysisController::class, 'totalCustomers'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/orderstoday',[AnalysisController::class, 'ordersToday'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/fiverecentorders',[AnalysisController::class, 'fiveRecentOrders'])->middleware(['auth:sanctum','employee','notbanned']);
