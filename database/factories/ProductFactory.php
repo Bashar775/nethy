@@ -23,13 +23,14 @@ class ProductFactory extends Factory
             's_name'=>fake()->word(),
             's_description'=>fake()->sentence(),
             'price' => fake()->randomFloat(2, 1, 1000),
+            'cost'=> fake()->randomFloat(2, 1, 1000),
             'stock_quantity' => fake()->numberBetween(0, 100),
             'category_id' => \App\Models\Category::factory(),
             'delivery_option' => fake()->word(),
             'product_rate' => fake()->randomFloat(1, 0, 5),
             'status' => 'instock',
             'tax_rate' => fake()->randomFloat(2, 0, 0.25),
-            'discount_rate' => null,
+            'discount_price' => 1,
         ];
     }
 }

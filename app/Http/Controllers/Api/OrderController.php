@@ -120,7 +120,7 @@ class OrderController extends Controller
     {
         //add the policy later on
         $this->authorize('updateOrder', User::class);
-        $order = Order::findOrFail($id);
+        $order = Order::find($id);
         if (!$order) {
             return response()->json(['message' => 'Order not found'], 404);
         }
@@ -368,6 +368,9 @@ class OrderController extends Controller
     }
     public function checkout(Request $request,$id){
         $order=Order::where('user_id',$request->user()->id)->where('status','unchecked')->get();
+        if(!$order){
+            return response()->json(['message'=>'Order not found'],404);
+        }
         if($order->count>1){
             return response()->json(['message'=>'you have more than one unchecked order and this is problomatic pleas call the support team which is me who is writing the code :)'],422);
         }
@@ -375,5 +378,23 @@ class OrderController extends Controller
         if(!$order){
             return response()->json(['message'=>'Order not found'],404);
         }
+        $order->status= 'pending';
+        $order->save();
+        return response()->json(['message'=>'your order is in teh queue to be confirmed , our sales team will call you soon to complete the order'],200);
+    }
+    public function uncheckout(Request $request,$id){
+        $order=Order::find($id);
+        if(!$order){
+            return response()->json(['message'=>'order not found'],404);
+        }
+        if($order->user_id !== $request->user()->id){
+            return response()->json(['message'=>'This is not your order'],403);
+        }
+        if($order->status!=='pending'){
+            return response()->json(['message'=>'Only pending orders can be unchecked if it is confirmed you need to call the support team']);
+        }
+        $order->status=='unchecked';
+        $order->save();
+        return response()->json(['message'=>'your order is back to UNCHECKED state , you can modify it now'],200);
     }
 }

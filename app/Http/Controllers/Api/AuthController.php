@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\Category;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -114,6 +115,14 @@ class AuthController extends Controller
             'name' => 'other',
             's_name' => 'other',
             'enabled' => true,
+        ]);
+        Supplier::create([
+            'name' => 'system',
+            'address' => 'HERE',
+            'phone' => '12345',
+            'email' => 'supplier@dentalub.com',
+            'product_type' => 'every thing',
+            'notes' => 'this supplier is the system default supplier , this supplier cannot be deleted or it will cause problems, in case another supplier got removed this one will be the replacment by defalut'
         ]);
 }
     public function create(Request $request){

@@ -27,6 +27,11 @@ class ProductController extends Controller
         $product = Product::with('images')->findOrFail($id);
         return response()->json(['data' => ProductResource::make($product)], 200);
     }
+    public function indexWebsite(Request $request){
+        $request['show']=1;
+        $products=Product::with('images')->paginate(10);
+        return response()->json(['date'=>ProductResource::collection($products)]);
+    }
     public function store(Request $request)
     {
         $this->authorize('createProduct', User::class);

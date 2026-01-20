@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('currency', 3)->default('SEK');
             $table->string('payment_method')->nullable();
             $table->date('order_date');
-            $table->string('status')->default('pending');//pendening , confirmed, cancelled,shipped
+            $table->string('status')->default('pending');//unchecked,pendening , confirmed, cancelled,shipped
             $table->text('notes')->nullable();
             $table->timestamps();
         });
