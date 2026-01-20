@@ -39,6 +39,8 @@ Route::delete('/deletesupplier/{id}',[App\Http\Controllers\Api\SupplierControlle
 Route::get('/products',[App\Http\Controllers\Api\ProductController::class,'index']); //tested
 Route::get('/shop',[ProductController::class,'indexWebsite']);
 Route::get('/mainpage',[ProductController::class,'mainPage']);
+Route::post('/categoryfilter',[ProductController::class, 'categoryFilter']);
+Route::post('/search',[ProductController::class, 'search']);
 Route::get('/products/{id}',[App\Http\Controllers\Api\ProductController::class,'show']); //tested
 Route::post('/createproduct',[App\Http\Controllers\Api\ProductController::class,'store'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 Route::post('/updateproduct/{id}',[App\Http\Controllers\Api\ProductController::class, 'update'])->middleware(['auth:sanctum','employee','notbanned']); //tested

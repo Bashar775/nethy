@@ -48,9 +48,39 @@ class ProductController extends Controller
     }
     public function categoryFilter(Request $request){
         $atts=$request->validate([
-            'categories'=>'array|required',
-            'categories.*'
+            'categories'=>'array|required|min:0',
+            'categories.*'=>'required|integer|distinct|exists:categories,id'
         ]);
+        $request['show']=1;
+        $products=[];
+        foreach($atts['categories'] as $category_id){
+            $category=Category::find($category_id);
+            $products[]=[
+                'category'=>$category->name,
+                'products'=> ProductResource::collection(Product::where('status', '!=', 'deleted')
+                    ->where('category_id', $category->id)
+                    ->orderBy('product_rate', 'desc')
+                    ->with('images')
+                    ->get())
+            ];
+        }
+        return response()->json(['date'=>$products],200);
+    }
+    public function search(Request $request){
+        $atts=$request->validate([
+            'value'=>'required|string|max:255'
+        ]);
+        $request['show']=1;
+        $products=Product::where('name','LIKE',"%{$atts['value']}%")
+        ->orWhere('s_name','LIKE', "%{$atts['value']}%")
+        ->with('images')
+        ->get();
+        $products=$products->where('status','!=','deleted');
+        if($products->count()==0){
+            return response()->json(['message'=>'there is no product with this name'],404);
+        }
+        return response()->json(['data'=>ProductResource::collection($products)]);
+
     }
     public function store(Request $request)
     {
