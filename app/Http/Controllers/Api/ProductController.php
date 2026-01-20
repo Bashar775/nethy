@@ -29,7 +29,7 @@ class ProductController extends Controller
     }
     public function indexWebsite(Request $request){
         $request['show']=1;
-        $products=Product::with('images')->simplePaginate(10);
+        $products=Product::where('status','!=','deleted')->with('images')->simplePaginate(10);
         return response()->json(['date'=>ProductResource::collection($products)]);
     }
     public function mainPage(Request $request){
