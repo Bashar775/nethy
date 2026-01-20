@@ -29,8 +29,28 @@ class ProductController extends Controller
     }
     public function indexWebsite(Request $request){
         $request['show']=1;
-        $products=Product::with('images')->paginate(10);
+        $products=Product::with('images')->simplePaginate(10);
         return response()->json(['date'=>ProductResource::collection($products)]);
+    }
+    public function mainPage(Request $request){
+        $request['show']=1;
+        $categories=Category::all();
+        $products=[];
+        foreach($categories as $category){
+        $products[]=['category'=>$category->name,'products'=>ProductResource::collection(Product::where('status','!=','deleted')
+        ->where('category_id',$category->id)
+        ->orderBy('product_rate','desc')
+        ->take(10)
+        ->with('images')
+        ->get())];
+        }
+        return response()->json(['date'=>$products]);
+    }
+    public function categoryFilter(Request $request){
+        $atts=$request->validate([
+            'categories'=>'array|required',
+            'categories.*'
+        ]);
     }
     public function store(Request $request)
     {

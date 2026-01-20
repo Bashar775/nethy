@@ -37,6 +37,8 @@ Route::post('/updatesupplier/{id}',[App\Http\Controllers\Api\SupplierController:
 Route::delete('/deletesupplier/{id}',[App\Http\Controllers\Api\SupplierController::class,'destroy'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 //PRODUCT ROUTES
 Route::get('/products',[App\Http\Controllers\Api\ProductController::class,'index']); //tested
+Route::get('/shop',[ProductController::class,'indexWebsite']);
+Route::get('/mainpage',[ProductController::class,'mainPage']);
 Route::get('/products/{id}',[App\Http\Controllers\Api\ProductController::class,'show']); //tested
 Route::post('/createproduct',[App\Http\Controllers\Api\ProductController::class,'store'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 Route::post('/updateproduct/{id}',[App\Http\Controllers\Api\ProductController::class, 'update'])->middleware(['auth:sanctum','employee','notbanned']); //tested
@@ -105,7 +107,7 @@ Route::post('/topcards',[App\Http\Controllers\Api\AnalysisController::class,'all
 Route::get('/productspercategory',[AnalysisController::class, 'numberOfProductsPerCategory'])->middleware(['auth:sanctum','employee','notbanned']);
 // Route::post('/monthlyrevanue',[AnalysisController::class,'monthlyRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::post('/monthlyprofit',[AnalysisController::class,'monthlyProfit'])->middleware(['auth:sanctum','employee','notbanned']);
-Route::get('/topproducts',[AnalysisController::class, 'topProducts'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/topproducts',[AnalysisController::class, 'topProducts']);
 Route::get('/totalrevanue',[AnalysisController::class, 'totalRevanue'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/totalcustomers',[AnalysisController::class, 'totalCustomers'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/orderstoday',[AnalysisController::class, 'ordersToday'])->middleware(['auth:sanctum','employee','notbanned']);

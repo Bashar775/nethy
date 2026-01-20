@@ -165,7 +165,7 @@ class AnalysisController extends Controller
         return response()->json(['data'=>\App\Http\Resources\OrderResource::collection($recentOrders)],200);
     }
     public function topProducts(){
-        $this->authorize('analysis',User::class);
+        // $this->authorize('analysis',User::class);
         $products=Product::all();
         $maxproduct=[];
         foreach($products as $product){
@@ -182,7 +182,7 @@ class AnalysisController extends Controller
         }
         $sorted=collect($maxproduct)->sortByDesc('total_sold');
         $sorted=$sorted->values()->all();
-        return response()->json(['data'=>$sorted],200);
+        return response()->json(['data'=>array_slice($sorted,0,count($sorted)-floor(count($sorted)/2))],200);
     }
     public function totalProducts(){
         return response()->json(['data'=>Product::all()->count()]);
