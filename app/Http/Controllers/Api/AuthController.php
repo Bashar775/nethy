@@ -371,10 +371,10 @@ class AuthController extends Controller
             $user->email_verified_at = null;
             $user->email = $atts['email'];
             $user->save();
-            try{
-            $user->sendEmailVerificationNotification();}catch (\Exception $e) {
-            Log::error('Error creating employee user: ' . $e->getMessage());
-            }
+            // try{
+            // $user->sendEmailVerificationNotification();}catch (\Exception $e) {
+            // Log::error('Error creating employee user: ' . $e->getMessage());
+            // }
         }}
         $user->save();
         if(isset($atts['email'])){
