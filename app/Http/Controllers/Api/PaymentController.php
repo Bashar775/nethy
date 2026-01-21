@@ -30,13 +30,6 @@ class PaymentController extends Controller
             'invoice_type' => 'required|in:customer_invoice,supplier_invoice',
             'invoice_id' => 'required|integer',
             //order or supplier_order
-            'payable_type' => 'required|in:order,supplier_order',
-            'payable_id' => 'required|integer',
-            //incoming or outgoing
-            'payment_type' => 'required|in:incoming,outgoing',
-            //customer or supplier
-            'payer_type' => 'required|in:customer,supplier',
-            'payer_id' => 'required|integer',
             'status' => 'required|in:pending,completed,failed,refunded',
             'payment_date' => 'required|date',
             'payment_method' => 'required|string',
@@ -51,11 +44,21 @@ class PaymentController extends Controller
                 if (!$invoice) {
                     return response()->json(['message' => 'Customer Invoice not found'], 404);
                 }
+                $atts['payable_type'] = 'order';
+                $atts['payable_id'] = $invoice->order_id;
+                $atts['payment_type']= 'incoming';
+                $atts['payer_type']= 'customer';
+                $atts['payer_id']=$invoice->user_id;
             } elseif ($atts['invoice_type'] == 'supplier_invoice') {
                 $invoice = SupplierInvoice::find($atts['invoice_id']);
                 if (!$invoice) {
                     return response()->json(['message' => 'Supplier Invoice not found'], 404);
                 }
+                $atts['payable_type']= 'supplier_order';
+                $atts['payable_id']=$invoice->supplier_order_id;
+                $atts['payment_type']= 'outgoing';
+                $atts['payer_type']= 'supplier';
+                $atts['payer_id']=$invoice->supplier_id;
             }
             if ($atts['payable_type'] == 'order') {
                 $payable = Order::find($atts['payable_id']);
