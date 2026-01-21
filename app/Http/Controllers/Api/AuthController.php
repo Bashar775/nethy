@@ -206,6 +206,25 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message'=>'logged out successfully']);
     }
+    public function resetPassword(Request $request){
+        $atts=$request->validate([
+            'email'=>'required|string|email|exists:users,email',
+            'current_password'=>'required|string|min:8',
+            'new_password'=>'required|string|max:255|confirmed|min:8'
+        ]);
+        $user=User::where('email',$atts['email'])->first();
+        if($request->user()->id!==$user->id){
+            return response()->json(['message'=>'You cannot reset a password to another account but yours'],403);
+        }
+        if(Hash::check($atts['current_password'],$user->password)){
+            $user->password=Hash::make($atts['new_password']);
+            $user->save();
+            $user->tokens()->delete();
+            return response()->json(['message'=>'your password has been updated , log in again with the new password'],200);
+        }else{
+            return response()->json(['wrong current password try again'],422);
+        }
+    }
     public function verifyEmail($id,$hash){
         $user = User::findOrFail($id);
         // Validate hash
@@ -337,12 +356,7 @@ class AuthController extends Controller
             'email'=>'string|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20|unique:users,phone,'.$user->id,
             'address' => 'nullable|string|max:500',
-            'password'=>'string|confirmed',
         ]);
-        if(isset($atts['password'])){
-            $atts['password']=Hash::make($atts['password']);
-            $user->password=$atts['password'];
-        }
         if(isset($atts['name'])){
             $user->name=$atts['name'];
         }
@@ -358,7 +372,7 @@ class AuthController extends Controller
             $user->sendEmailVerificationNotification();
         }
         $user->save();
-        if(isset($atts['email']) || isset($atts['password'])){
+        if(isset($atts['email'])){
             // Log out from all devices
             $user->tokens()->delete();
         }

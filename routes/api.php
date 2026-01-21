@@ -29,6 +29,7 @@ Route::post('/unbanuser/{id}',[AuthController::class,'unbanUser'])->middleware([
 Route::post('/updateuser',[AuthController::class,'update'])->middleware(['auth:sanctum','notbanned']); //tested
 Route::get('/me',[AuthController::class,'me'])->middleware(['auth:sanctum','notbanned']); //tested
 Route::post('/updateuserrate',[AuthController::class,'updateRate'])->middleware(['auth:sanctum','employee','notbanned']); //tested
+Route::post('/resetpassword',[AuthController::class, 'resetPassword'])->middleware(['auth:sanctum', 'notbanned']);
 //SUPPLIER ROUTES
 Route::get('/suppliers',[App\Http\Controllers\Api\SupplierController::class,'index'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 Route::get('/suppliers/{id}',[App\Http\Controllers\Api\SupplierController::class,'show'])->middleware(['auth:sanctum','employee','notbanned']); //tested
