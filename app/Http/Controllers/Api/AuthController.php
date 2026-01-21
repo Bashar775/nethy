@@ -366,21 +366,18 @@ class AuthController extends Controller
         if(isset($atts['address'])){
             $user->address=$atts['address'];
         }
+        $user->save();
         if(isset($atts['email'])){
             if($atts['email'] != $user->email){
             $user->email_verified_at = null;
             $user->email = $atts['email'];
             $user->save();
+            $user->tokens()->delete();
             // try{
             // $user->sendEmailVerificationNotification();}catch (\Exception $e) {
             // Log::error('Error creating employee user: ' . $e->getMessage());
             // }
         }}
-        $user->save();
-        if(isset($atts['email'])){
-            // Log out from all devices
-            $user->tokens()->delete();
-        }
         return response()->json([
             'message' => 'user instance has been updated successfully',
             'user' => UserResource::make($user),
