@@ -370,6 +370,7 @@ class AuthController extends Controller
             if($atts['email'] != $user->email){
             $user->email_verified_at = null;
             $user->email = $atts['email'];
+            $user->save();
             $user->sendEmailVerificationNotification();
             }
         }
