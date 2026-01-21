@@ -91,7 +91,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             's_description' => 'nullable|string',
             'sku'=>'nullable|string|unique:products,sku',
-            'price' => 'required|numeric|min:0|gt:cost|gt:discount_price',
+            'price' => 'required|numeric|min:0|gt:cost',
             'cost'=> 'required|numeric|min:0|lt:price',
             'category' => 'required|string',
             'stock_quantity' => 'nullable|integer|min:0',

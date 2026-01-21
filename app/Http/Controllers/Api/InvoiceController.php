@@ -93,34 +93,32 @@ class InvoiceController extends Controller
         $invoice->save();
         return response()->json(['message'=>'Invoice status updated successfully','data'=>InvoiceResource::make($invoice)],200);
     }
-    public function update(Request $request,$id){
-        $this->authorize('customerInvoice',User::class);
-        $invoice=Invoice::find($id);
-        if(!$invoice){
-            return response()->json(['message'=>'Invoice not found'],404);
-        }
-        $atts=$request->validate([
-            'due_date'=>'nullable|date|after:today',
-            'notes'=>'nullable|string',
-            'currency'=>'nullable|string|size:3',
-            'invoice_date'=>'nullable|date',
-            'invoice_number'=>'nullable|string|unique:invoices,invoice_number,'.$invoice->id,
-            'subtotal'=>'nullable|numeric|min:0|gt:tax_amount|gt:discount_amount',
-            'tax_amount'=>'nullable|numeric|min:0|lt:subtotal',
-            'discount_amount'=>'nullable|numeric|min:0|lt:subtotal',
-            'total_amount'=>'nullable|numeric|min:0',
-        ]);
-        try{
-            if(!($atts['total_amount']==$atts['subtotal']+$atts['tax_amount']-$atts['discount_amount'])){
-                return response()->json(['message'=>'total amount must be equal to subtotal + tax amount - discount amount'],400);
-            }
-        $invoice->update($atts);
-        $invoice->save();
-        }catch(\Exception $e){
-            return response()->json(['message'=>'Error updating invoice: '.$e->getMessage()],500);
-        }
-        return response()->json(['message'=>'Invoice updated successfully','data'=>InvoiceResource::make($invoice)],200);
-    }
+    // public function update(Request $request,$id){
+    //     $this->authorize('customerInvoice',User::class);
+    //     $invoice=Invoice::find($id);
+    //     if(!$invoice){
+    //         return response()->json(['message'=>'Invoice not found'],404);
+    //     }
+    //     $atts=$request->validate([
+    //         'due_date'=>'nullable|date|after:today',
+    //         'notes'=>'nullable|string',
+    //         'currency'=>'nullable|string|size:3',
+    //         'invoice_date'=>'nullable|date',
+    //         'invoice_number'=>'nullable|string|unique:invoices,invoice_number,'.$invoice->id,
+    //         'subtotal'=>'nullable|numeric|min:0|gt:tax_amount|gt:discount_amount',
+    //         'tax_amount'=>'nullable|numeric|min:0|lt:subtotal',
+    //         'discount_amount'=>'nullable|numeric|min:0|lt:subtotal',
+    //         'total_amount'=>'nullable|numeric|min:0',
+    //     ]);
+    //     try{
+    //         if(isset($atts['']))
+    //     $invoice->update($atts);
+    //     $invoice->save();
+    //     }catch(\Exception $e){
+    //         return response()->json(['message'=>'Error updating invoice: '.$e->getMessage()],500);
+    //     }
+    //     return response()->json(['message'=>'Invoice updated successfully','data'=>InvoiceResource::make($invoice)],200);
+    // }
     public function store(Request $request)
     {
         $this->authorize('customerInvoice', User::class);
@@ -129,7 +127,7 @@ class InvoiceController extends Controller
             'order_id' => 'required|exists:orders,id',
             'invoice_number' => 'required|string|unique:invoices,invoice_number',
             'invoice_date' => 'required|date',
-            'subtotal' => 'required|numeric|min:0|gt:tax_amount|gt:discount_amount',
+            'subtotal' => 'required|numeric|min:0|gt:tax_amount',
             'tax_amount' => 'required|numeric|min:0|lt:subtotal',
             'discount_amount' => 'nullable|numeric|min:0|lt:subtotal',
             'total_amount' => 'required|numeric|min:0',
