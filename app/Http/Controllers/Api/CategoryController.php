@@ -36,8 +36,8 @@ class CategoryController extends Controller
         ]);
         $this->authorize('createCategory',User::class);
         $category=Category::create([
-            'name'=>$atts['name'],
-            's_name'=>$atts['s_name'],
+            'name'=>$atts['name'] ?? $atts['s_name'],
+            's_name'=>$atts['s_name'] ?? $atts['name'],
             'enabled'=>$atts['enabled'] ?? true,
         ]);
         return response()->json([
