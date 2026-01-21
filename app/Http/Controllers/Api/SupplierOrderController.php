@@ -255,7 +255,7 @@ class SupplierOrderController extends Controller
                 'tax_amount' => $lineTax,
             ]);
             // Update order totals
-            $order->number_of_items += 1;
+            $order->number_of_items += $quantity;
             // $order->discount_amount += $discountAmount;
             $order->subtotal += $lineSubtotal;
             $order->tax_amount += $lineTax;
@@ -287,7 +287,7 @@ class SupplierOrderController extends Controller
             $pivotData = $order->products()->where('product_id', $product->id)->first()->pivot;
             $order->products()->detach($product->id);
             // Update order totals
-            $order->number_of_items -= 1;
+            $order->number_of_items -= $pivotData->quantity;
             // $order->discount_amount -= $pivotData->discount_amount;
             $order->subtotal -= $pivotData->subtotal;
             $order->tax_amount -= $pivotData->tax_amount;
