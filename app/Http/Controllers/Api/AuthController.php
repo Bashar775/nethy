@@ -366,10 +366,12 @@ class AuthController extends Controller
         if(isset($atts['address'])){
             $user->address=$atts['address'];
         }
-        if(isset($atts['email']) && $atts['email'] != $user->email){
+        if(isset($atts['email'])){
+            if($atts['email'] != $user->email){
             $user->email_verified_at = null;
             $user->email = $atts['email'];
             $user->sendEmailVerificationNotification();
+            }
         }
         $user->save();
         if(isset($atts['email'])){
