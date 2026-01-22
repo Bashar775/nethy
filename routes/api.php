@@ -52,7 +52,7 @@ Route::get('/categories',[App\Http\Controllers\Api\CategoryController::class,'in
 Route::post('/createcategory',[App\Http\Controllers\Api\CategoryController::class,'store'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 Route::get('/categories/{id}',[App\Http\Controllers\Api\CategoryController::class,'show']); //tested
 Route::post('/updatecategorystate/{id}',[App\Http\Controllers\Api\CategoryController::class,'updateState'])->middleware(['auth:sanctum','employee','notbanned']); //tested
-Route::post('/updatecategory/{id}',[App\Http\Controllers\Api\CategoryController::class,'update'])->middleware(['auth:sanctum','employee','notbanned']); //tested
+// Route::post('/updatecategory/{id}',[App\Http\Controllers\Api\CategoryController::class,'update'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 Route::delete('/deletecategory/{id}',[App\Http\Controllers\Api\CategoryController::class,'destroy'])->middleware(['auth:sanctum','employee','notbanned']); //tested
 //CUSTOMER OREDERS ROUTES
 Route::get('/customerorders',[OrderController::class,'index'])->middleware(['auth:sanctum', 'employee','notbanned']);
@@ -61,7 +61,7 @@ Route::post('/createorder',[OrderController::class,'store'])->middleware(['auth:
 Route::post('/confirmcustomerorder/{id}',[OrderController::class,'confirm'])->middleware(['auth:sanctum', 'employee','notbanned']);
 Route::post('/cancelcustomerorder/{id}',[OrderController::class,'cancel'])->middleware(['auth:sanctum', 'employee','notbanned']);
 // Route::post('/deletecustomerorder/{id}',[OrderController::class,'destroy'])->middleware(['auth:sanctum', 'employee','notbanned']);
-Route::post('/additemtoorder/{id}',[OrderController::class,'addItem'])->middleware(['auth:sanctum', 'employee','notbanned']);
+Route::post('/additemtoorder',[OrderController::class,'addItem'])->middleware(['auth:sanctum', 'employee','notbanned']);
 Route::post('/removeitemfromorder/{id}',[OrderController::class,'removeItem'])->middleware(['auth:sanctum', 'employee','notbanned']);
 Route::post('/updateorderheaders/{id}',[OrderController::class,'update'])->middleware(['auth:sanctum', 'employee','notbanned']);
 Route::post('/updaterate/{id}',[AuthController::class,'updateRate'])->middleware(['auth:sanctum','employee','notbanned']);
