@@ -382,19 +382,40 @@ class OrderController extends Controller
         $order->save();
         return response()->json(['message'=>'your order is in teh queue to be confirmed , our sales team will call you soon to complete the order'],200);
     }
-    public function uncheckout(Request $request,$id){
-        $order=Order::find($id);
+    // public function uncheckout(Request $request,$id){
+    //     $order=Order::find($id);
+    //     if(!$order){
+    //         return response()->json(['message'=>'order not found'],404);
+    //     }
+    //     if($order->user_id !== $request->user()->id){
+    //         return response()->json(['message'=>'This is not your order'],403);
+    //     }
+    //     if($order->status!=='pending'){
+    //         return response()->json(['message'=>'Only pending orders can be unchecked if it is confirmed you need to call the support team']);
+    //     }
+    //     $order->status=='unchecked';
+    //     $order->save();
+    //     return response()->json(['message'=>'your order is back to UNCHECKED state , you can modify it now'],200);
+    // }
+    public function myCart(Request $request){
+        $orders=$request->user()->orders()->where('status','unchecked')->get();
+        if($orders->count()>0){
+            return response()->json(['message'=>'there is a problem you have more than one cart'],422);
+        }
+        $order=$orders->first();
         if(!$order){
-            return response()->json(['message'=>'order not found'],404);
+            return response()->json(['message'=>'you have no cart yet'],404);
         }
-        if($order->user_id !== $request->user()->id){
-            return response()->json(['message'=>'This is not your order'],403);
+        $relatedProducts = $order->products;
+        foreach ($relatedProducts as $productData) {
+            $product = Product::find($productData->id);
+            $images = ImageResource::collection($product->images);
+            $productData['images'] = $images;
         }
-        if($order->status!=='pending'){
-            return response()->json(['message'=>'Only pending orders can be unchecked if it is confirmed you need to call the support team']);
-        }
-        $order->status=='unchecked';
-        $order->save();
-        return response()->json(['message'=>'your order is back to UNCHECKED state , you can modify it now'],200);
+        return response()->json(['order'=>OrderResource::make($order),'related_products'=> $relatedProducts]);
+    }
+    public function myHistory(Request $request){
+        $orders=Order::where('user_id',$request->user()->id)->get();
+        return response()->json(['data'=>OrderResource::collection($orders)]);
     }
 }
