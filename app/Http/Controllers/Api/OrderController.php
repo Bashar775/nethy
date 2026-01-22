@@ -399,7 +399,7 @@ class OrderController extends Controller
     // }
     public function myCart(Request $request){
         $orders=$request->user()->orders()->where('status','unchecked')->get();
-        if($orders->count()>0){
+        if($orders->count()>1){
             return response()->json(['message'=>'there is a problem you have more than one cart'],422);
         }
         $order=$orders->first();
