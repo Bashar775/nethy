@@ -63,8 +63,8 @@ Route::post('/cancelcustomerorder/{id}',[OrderController::class,'cancel'])->midd
 // Route::post('/deletecustomerorder/{id}',[OrderController::class,'destroy'])->middleware(['auth:sanctum', 'employee','notbanned']);
 Route::post('/additemtoorder',[OrderController::class,'addItem'])->middleware(['auth:sanctum','notbanned']);
 Route::post('/removeitemfromorder',[OrderController::class,'removeItem'])->middleware(['auth:sanctum','notbanned']);
-Route::post('/checkout',[OrderController::class,'checkout'])->middleware(['auth:sanctum', 'notbanned']);
-Route::get('/mycart/{id}',[OrderController::class,'myCart'])->middleware(['auth:sanctum', 'notbanned']);
+Route::post('/checkout/{id}',[OrderController::class,'checkout'])->middleware(['auth:sanctum', 'notbanned']);
+Route::get('/mycart',[OrderController::class,'myCart'])->middleware(['auth:sanctum', 'notbanned']);
 Route::get('/myhistory',[OrderController::class,'myHistory'])->middleware(['auth:sanctum', 'notbanned']);
 Route::post('/updateorderheaders/{id}',[OrderController::class,'update'])->middleware(['auth:sanctum', 'employee','notbanned']);
 Route::post('/updaterate/{id}',[AuthController::class,'updateRate'])->middleware(['auth:sanctum','employee','notbanned']);
