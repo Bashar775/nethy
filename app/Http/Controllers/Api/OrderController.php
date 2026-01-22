@@ -371,7 +371,7 @@ class OrderController extends Controller
         if(!$order){
             return response()->json(['message'=>'Order not found'],404);
         }
-        if($order->count>1){
+        if($order->count()>1){
             return response()->json(['message'=>'you have more than one unchecked order and this is problomatic pleas call the support team which is me who is writing the code :)'],422);
         }
         $order=$order->first();
