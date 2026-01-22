@@ -137,7 +137,7 @@ class ProductController extends Controller
                     'stock_alert'=>$atts['stock_alert'] ?? 10,
                     'delivery_option' => $atts['delivery_option'] ?? null,
                     'tax_rate' => $atts['tax_rate'] ?? 0,
-                    'discount_price' => $atts['discount_price'] ?? 0,
+                    'discount_price' => $atts['discount_price'] ?? $atts['price'],
                 ]);
                 if ($product->stock_quantity < 0) {
                     $product->status = 'alertstock';
@@ -198,7 +198,7 @@ class ProductController extends Controller
             'stock_quantity' => 'nullable|integer|min:0',
             'low_stock_alert_threshold'=>'nullable|integer|min:0',
             'delivery_option' => 'nullable|string',
-            'tax_rate' => 'nullable|numeric|min:0',
+            'tax_rate' => 'nullable|numeric|min:0|max:100',
             'discount_price' => 'nullable|numeric|min:0',
         ]);
         try {
@@ -218,9 +218,14 @@ class ProductController extends Controller
                         $atts['category_id'] = $category_id;
                     }
                 }
+                if(isset($atts['price'])){
+                    if($atts['price']<($atts['discount_price']??$product->discount_price)){
+                        return response()->json(['message'=>'the product price you specified is lower than the offer price'],422);
+                    }
+                }
                 if (isset($atts['discount_price'])) {
-                    if ($atts['discount_price'] > $atts['price']) {
-                        $atts['discount_price'] = 0;
+                    if ($atts['discount_price'] > ($atts['price'] ?? $product->price) ) {
+                        $atts['discount_price'] = ($atts['price'] ?? $product->price);
                     }
                 }
                 $atts['stock_alert']=$atts['low_stock_alert_threshold'] ?? $product->stock_alert;
