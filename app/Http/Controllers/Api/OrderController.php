@@ -260,7 +260,7 @@ class OrderController extends Controller
             $lineTax = $lineSubtotal * (($product->tax_rate ?? 0) / 100);
                     $discountAmount = 0;
                     if ($product->discount_price) {
-                        $discountAmount = ($lineSubtotal -($product->discount_price * $quantity));
+                        $discountAmount = ($product->price - ($product->discount_price ?? $product->price))  * $quantity;
                     }
             $order->products()->attach($product->id, [
                 'quantity' => $quantity,

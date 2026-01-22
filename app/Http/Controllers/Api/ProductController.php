@@ -118,7 +118,7 @@ class ProductController extends Controller
                 }
                 if (isset($atts['discount_price'])) {
                     if ($atts['discount_price'] > $atts['price']) {
-                        $atts['discount_price'] = 0;
+                        $atts['discount_price'] = $atts['price'];
                     }
                 }
                 $atts['stock_alert']=$atts['low_stock_alert_threshold'] ?? 10;
