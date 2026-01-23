@@ -10,8 +10,7 @@ class StockMovmentController extends Controller
 {
     public function index()
     {
-        $s=StockMovment::all();
-        $s=$s->simplePaginate(10);
+        $s=StockMovment::orderBy('updated_at', 'desc')->simplePaginate(10);
         return response()->json(['data' => $s], 200);
     }
 }

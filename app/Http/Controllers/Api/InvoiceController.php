@@ -21,8 +21,7 @@ class InvoiceController extends Controller
             $invoice->payment_status='overdue';
             $invoice->save();
         }
-        $invoices=Invoice::all();
-        $invoices=$invoices->simplePaginate(10);
+        $invoices=Invoice::orderBy('updated_at', 'desc')->simplePaginate(10);;
         return response()->json(['data'=>InvoiceResource::collection($invoices)],200);
     }
     public function generate(Request $request){

@@ -20,15 +20,13 @@ class AuthController extends Controller
     use AuthorizesRequests;
     public function indexCustomers(){
         $this->authorize('browseUsers',User::class);
-        $customers=User::where('is_employee',0)->get();
-        $customers=$customers->simplePaginate(10);
-        return UserResource::collection($customers);
+        $customers=User::where('is_employee',0)->orderBy('updated_at', 'desc')->simplePaginate(10);
+        return response()->json(['data'=>UserResource::collection($customers)],200);
     }
     public function indexEmployees(){
         $this->authorize('browseUsers', User::class);
-        $employees = User::where('is_employee', 1)->get(); 
-        $employees=$employees->simplePaginate(10);
-        return UserResource::collection($employees);
+        $employees = User::where('is_employee', 1)->orderBy('updated_at', 'desc')->simplePaginate(10); 
+        return response()->json(['data'=>UserResource::collection($employees)]);
     }
     public function show(Request $request,$id){
         $this->authorize('browseUsers', User::class);
