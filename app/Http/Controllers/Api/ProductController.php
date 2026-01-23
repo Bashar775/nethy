@@ -19,8 +19,8 @@ class ProductController extends Controller
     use AuthorizesRequests;
     public function index()
     {
-        $products=Product::orderBy('updated_at','desc')->simplePaginate(10);
-        return response()->json(['data' => ProductResource::collection($products)], 200);
+        // $products=Product::orderBy('updated_at','desc')->simplePaginate(10);
+        return response()->json(['data' => ProductResource::collection(Product::all())], 200);
     }
     public function show(Request $request, $id)
     {

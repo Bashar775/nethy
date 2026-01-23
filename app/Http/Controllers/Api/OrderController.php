@@ -20,8 +20,8 @@ class OrderController extends Controller
     public function index()
     {
         $this->authorize('viewAnyOrder', User::class);
-        $orders=Order::orderBy('updated_at', 'desc')->simplePaginate(10);
-        return response()->json(['data' => OrderResource::collection($orders)], 200);
+        // $orders=Order::orderBy('updated_at', 'desc')->simplePaginate(10);
+        return response()->json(['data' => OrderResource::collection(Order::all())], 200);
     }
     public function show($id)
     {

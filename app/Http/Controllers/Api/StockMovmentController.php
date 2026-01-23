@@ -11,7 +11,7 @@ class StockMovmentController extends Controller
 {
     public function index()
     {
-        $s=StockMovment::orderBy('updated_at', 'desc')->simplePaginate(10);
-        return response()->json(StockResource::collection($s), 200);
+        // $s=StockMovment::orderBy('updated_at', 'desc')->simplePaginate(10);
+        return response()->json([StockMovment::all()]);
     }
 }

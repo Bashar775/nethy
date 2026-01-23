@@ -20,8 +20,8 @@ class SupplierOrderController extends Controller
     public function index()
     {
         $this->authorize('supplierOrder', User::class);
-        $orders=SupplierOrder::orderBy('updated_at', 'desc')->simplePaginate(10);
-        return response()->json(['data'=>SupplierOrderResource::collection($orders)],200);
+        // $orders=SupplierOrder::orderBy('updated_at', 'desc')->simplePaginate(10);
+        return response()->json(['data'=>SupplierOrderResource::collection(SupplierOrder::all())],200);
     }
     public function show($id)
     {
