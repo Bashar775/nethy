@@ -19,7 +19,9 @@ class ProductController extends Controller
     use AuthorizesRequests;
     public function index()
     {
-        return response()->json(['data' => ProductResource::collection(Product::all())], 200);
+        $products=Product::all();
+        $products=$products->simplePaginate(10);
+        return response()->json(['data' => ProductResource::collection($products)], 200);
     }
     public function show(Request $request, $id)
     {
@@ -225,7 +227,7 @@ class ProductController extends Controller
                 }
                 if (isset($atts['discount_price'])) {
                     if ($atts['discount_price'] > ($atts['price'] ?? $product->price) ) {
-                        $atts['discount_price'] = ($atts['price'] ?? $product->price);
+                        $atts['discount_price'] = ($atts['price'] ?? $product->price)-1+1;
                     }
                 }
                 $atts['stock_alert']=$atts['low_stock_alert_threshold'] ?? $product->stock_alert;

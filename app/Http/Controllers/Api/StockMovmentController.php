@@ -10,6 +10,8 @@ class StockMovmentController extends Controller
 {
     public function index()
     {
-        return response()->json(['data' => StockMovment::all()], 200);
+        $s=StockMovment::all();
+        $s=$s->simplePaginate(10);
+        return response()->json(['data' => $s], 200);
     }
 }

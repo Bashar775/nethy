@@ -22,7 +22,9 @@ class SupplierInvoiceController extends Controller
             $invoice->payment_status = 'overdue';
             $invoice->save();
         }
-        return response()->json(['data' => SupplierInvoiceResource::collection(SupplierInvoice::all())], 200);
+        $invoices=SupplierInvoice::all();
+        $invoices=$invoices->simplePaginate(10);
+        return response()->json(['data' => SupplierInvoiceResource::collection($invoices)], 200);
     }
     public function generate(Request $request)
     {

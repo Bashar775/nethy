@@ -21,7 +21,9 @@ class InvoiceController extends Controller
             $invoice->payment_status='overdue';
             $invoice->save();
         }
-        return response()->json(['data'=>InvoiceResource::collection(Invoice::all())],200);
+        $invoices=Invoice::all();
+        $invoices=$invoices->simplePaginate(10);
+        return response()->json(['data'=>InvoiceResource::collection($invoices)],200);
     }
     public function generate(Request $request){
         $this->authorize('customerInvoice',User::class);

@@ -21,11 +21,13 @@ class AuthController extends Controller
     public function indexCustomers(){
         $this->authorize('browseUsers',User::class);
         $customers=User::where('is_employee',0)->get();
+        $customers=$customers->simplePaginate(10);
         return UserResource::collection($customers);
     }
     public function indexEmployees(){
         $this->authorize('browseUsers', User::class);
-        $employees = User::where('is_employee', 1)->get();
+        $employees = User::where('is_employee', 1)->get(); 
+        $employees=$employees->simplePaginate(10);
         return UserResource::collection($employees);
     }
     public function show(Request $request,$id){

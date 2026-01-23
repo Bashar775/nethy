@@ -20,7 +20,9 @@ class PaymentController extends Controller
     public function index()
     {
         $this->authorize('payment', User::class);
-        return response()->json(['data' => PaymentResource::collection(Payment::all())]);
+        $payments=Payment::all();
+        $payments=$payments->simplePaginate(10);
+        return response()->json(['data' => PaymentResource::collection($payments)]);
     }
     public function store(Request $request)
     {
