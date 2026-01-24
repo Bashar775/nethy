@@ -56,7 +56,7 @@ class AuthController extends Controller
             //here i am using the builr in hash function to hash the password
             'password' => Hash::make($atts['password'])
         ]);
-        $user->sendEmailVerificationNotification();
+        // $user->sendEmailVerificationNotification();
         return response()->json([
             'message' => 'Registration successful. Please check your email to verify your account.'
         ]);
