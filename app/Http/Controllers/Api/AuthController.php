@@ -51,7 +51,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $atts['name'],
             'email' => $atts['email'],
-            'phone'=>$atts['phone'],
+            'phone'=>$atts['phone'] ?? null,
             'address'=>$atts['address'] ?? null,
             //here i am using the builr in hash function to hash the password
             'password' => Hash::make($atts['password'])
