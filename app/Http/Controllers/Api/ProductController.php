@@ -34,9 +34,16 @@ class ProductController extends Controller
         return response()->json(['date'=>ProductResource::collection($products)]);
     }
     public function mainPage(Request $request){
+        $atts=$request->validate([
+            'lang'=>'nullable|string|in:en,sv',
+        ]);
+        if(!isset($atts['lang'])){
+            $atts['lang']='en';
+        }
         $request['show']=1;
         $categories=Category::all();
         $products=[];
+        if($atts['lang']=='en'){
         foreach($categories as $category){
         $products[]=['category'=>$category->name,'products'=>ProductResource::collection(Product::where('status','!=','deleted')
         ->where('category_id',$category->id)
@@ -44,7 +51,15 @@ class ProductController extends Controller
         ->take(10)
         ->with('images')
         ->get())];
-        }
+        }}elseif($atts['lang']=='sv'){
+            foreach ($categories as $category) {
+                $products[] = ['category' => $category->s_name, 'products' => ProductResource::collection(Product::where('status', '!=', 'deleted')
+                    ->where('category_id', $category->id)
+                    ->orderBy('product_rate', 'desc')
+                    ->take(10)
+                    ->with('images')
+                    ->get())];
+        }}
         return response()->json(['date'=>$products]);
     }
     public function categoryFilter(Request $request){
