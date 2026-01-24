@@ -62,8 +62,7 @@ return [
         ],
 
         'resend' => [
-            'transport' => 'resend',
-            'key' => env('RESEND_API_KEY')
+            'transport' => 'resend'
         ],
 
         'sendmail' => [
@@ -98,6 +97,9 @@ return [
             'retry_after' => 60,
         ],
 
+    ],
+    'resend' => [
+        'key' => env('RESEND_API_KEY'),
     ],
 
     /*
