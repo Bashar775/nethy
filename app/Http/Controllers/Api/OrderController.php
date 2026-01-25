@@ -381,7 +381,7 @@ class OrderController extends Controller
         }
         $order->status= 'pending';
         $order->save();
-        return response()->json(['message'=>'your order is in teh queue to be confirmed , our sales team will call you soon to complete the order'],200);
+        return response()->json(['message'=>'your order is in the queue to be confirmed , our sales team will call you soon to complete the order'],200);
     }
     // public function uncheckout(Request $request,$id){
     //     $order=Order::find($id);

@@ -53,6 +53,9 @@ class SupplierController extends Controller
         if (!$supplier) {
             return response()->json(['message' => 'Supplier not found'], 404);
         }
+        if ($supplier->name == 'system') {
+            return response()->json(['message' => 'the system supplier cannot be deleted'], 403);
+        }
         $atts = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|nullable|email|max:255|unique:suppliers,email,' . $supplier->id,
@@ -76,7 +79,7 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Supplier not found'], 404);
         }
         if($supplier->name=='system'){
-            return response()->json(['message'=>'the system supplier cannot be deleted']);
+            return response()->json(['message'=>'the system supplier cannot be deleted'],403);
         }
             if($supplier->supplierOrders()->count()>0 || $supplier->supplierInvoices()->count()>0){
                 return response()->json(['message'=>'Cannot delete supplier with associated orders or invoices'],403);
