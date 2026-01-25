@@ -54,7 +54,7 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Supplier not found'], 404);
         }
         if ($supplier->name == 'system') {
-            return response()->json(['message' => 'the system supplier cannot be deleted'], 403);
+            return response()->json(['message' => 'the system supplier cannot be modified'], 403);
         }
         $atts = $request->validate([
             'name' => 'sometimes|required|string|max:255',
