@@ -81,7 +81,8 @@ class OrderController extends Controller
                     $number_of_items+=$productData['quantity'];
                     $quantity = $productData['quantity'];
                     $lineSubtotal = $product->price * $quantity;
-                    $lineTax = $lineSubtotal * (($product->tax_rate ?? 0) / 100);
+                    
+                    $lineTax = ($product->discount_price * $quantity) * (($product->tax_rate ?? 0) / 100);
                     $discountAmount = 0;
                     if ($product->discount_price) {
                         $discountAmount = ($lineSubtotal -($product->discount_price * $quantity));
@@ -258,7 +259,7 @@ class OrderController extends Controller
         if ($order && $product) {
             $quantity = $atts['quantity'];
             $lineSubtotal = $product->price * $quantity;
-            $lineTax = $lineSubtotal * (($product->tax_rate ?? 0) / 100);
+            $lineTax = ($product->discount_price * $quantity) * (($product->tax_rate ?? 0) / 100);
                     $discountAmount = 0;
                     if ($product->discount_price) {
                         $discountAmount = ($product->price - ($product->discount_price ?? $product->price))  * $quantity;
