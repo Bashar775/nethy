@@ -97,7 +97,9 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
             'dump' => [
-                'dump_binary_path' => env('DB_DUMP_PATH'),
+                    'dump_binary_path' => env('APP_ENV') === 'local' 
+        ? env('DB_DUMP_PATH') // Windows local
+        : '/usr/bin/', // Linux path for Railway
                 'use_single_transaction' => false,
                 'timeout' => 60 * 5,
             ],
