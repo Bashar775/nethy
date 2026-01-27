@@ -120,3 +120,7 @@ Route::get('/orderstoday',[AnalysisController::class, 'ordersToday'])->middlewar
 Route::get('/fiverecentorders',[AnalysisController::class, 'fiveRecentOrders'])->middleware(['auth:sanctum','employee','notbanned']);
 Route::get('/totalproducts',[AnalysisController::class, 'totalProducts'])->middleware(['auth:sanctum', 'employee', 'notbanned']);
 Route::post('/salestoorders',[AnalysisController::class, 'salesToOrders'])->middleware(['auth:sanctum', 'employee', 'notbanned']);
+//Backup
+Route::get('/backups',[App\Http\Controllers\Api\BackupController::class,'index'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::get('/downloadbackup/{filename}',[App\Http\Controllers\Api\BackupController::class,'download'])->middleware(['auth:sanctum','employee','notbanned']);
+Route::post('/downloadi',[App\Http\Controllers\Api\BackupController::class,'downloadI'])->middleware(['auth:sanctum','employee','notbanned']);

@@ -91,4 +91,9 @@ class UserPolicy
         Log::error('hi from policy - banuser');
         return $user->isAdmin() || $user->isInventory();
     }
+    public function backup(User $user): bool
+    {
+        Log::error('hi from policy - backup');
+        return $user->isAdmin() || $user->isInventory();
+    }
 }

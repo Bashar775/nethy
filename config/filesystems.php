@@ -32,10 +32,15 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app/private'),
+            'root' => storage_path('app'),
             'serve' => true,
             'throw' => false,
             'report' => false,
+        ],
+        'backups' => [  // Create a dedicated backup disk
+            'driver' => 'local',
+            'root' => storage_path('app/backups'),  // Direct to backups folder
+            'throw' => false,
         ],
 
         'public' => [

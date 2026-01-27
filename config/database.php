@@ -96,6 +96,11 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
+            'dump' => [
+                'dump_binary_path' => env('DB_DUMP_PATH'),
+                'use_single_transaction' => false,
+                'timeout' => 60 * 5,
+            ],
         ],
 
         'sqlsrv' => [
